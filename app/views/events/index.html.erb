@@ -1,0 +1,166 @@
+<div>
+  <div>
+    <h1>
+      List of all events
+    </h1>
+  </div>
+</div>
+
+<hr>
+
+<div>
+  <div>
+    <h2>
+      Add a new event
+    </h2>
+
+    <form action="/insert_event" method="post">
+      <div>
+        <label for="event_type_box">
+          Event type
+        </label>
+
+        <input type="text" id="event_type_box" name="query_event_type">
+      </div>
+
+      <div>
+        <label for="event_date_box">
+          Event date
+        </label>
+
+        <input type="date" id="event_date_box" name="query_event_date">
+      </div>
+
+      <div>
+        <label for="event_location_box">
+          Event location
+        </label>
+
+        <input type="text" id="event_location_box" name="query_event_location">
+      </div>
+
+      <div>
+        <label for="contact_id_box">
+          Contact
+        </label>
+
+        <input type="text" id="contact_id_box" name="query_contact_id">
+      </div>
+
+      <div>
+        <label for="user_id_box">
+          User
+        </label>
+
+        <input type="text" id="user_id_box" name="query_user_id">
+      </div>
+
+      <div>
+        <label for="intention_box">
+          Intention
+        </label>
+
+        <input type="text" id="intention_box" name="query_intention">
+      </div>
+
+      <button>
+        Create event
+      </button>
+    </form>
+  </div>
+</div>
+
+<hr>
+<div>
+  <div>
+    <table border="1">
+      <tr>
+        <th>
+          ID
+        </th>
+
+        <th>
+          Event type
+        </th>
+
+        <th>
+          Event date
+        </th>
+
+        <th>
+          Event location
+        </th>
+
+        <th>
+          Contact
+        </th>
+
+        <th>
+          User
+        </th>
+
+        <th>
+          Intention
+        </th>
+
+        <th>
+          Created at
+        </th>
+
+        <th>
+          Updated at
+        </th>
+
+        <th>
+        </th>
+      </tr>
+
+      <% @list_of_events.each do |an_event| %>
+      <tr>
+        <td>
+          <%= an_event.id %>
+        </td>
+
+        <td>
+          <%= an_event.event_type %>
+        </td>
+
+        <td>
+          <%= an_event.event_date %>
+        </td>
+
+        <td>
+          <%= an_event.event_location %>
+        </td>
+
+        <td>
+          <%= an_event.contact_id %>
+        </td>
+
+        <td>
+          <%= an_event.user_id %>
+        </td>
+
+        <td>
+          <%= an_event.intention %>
+        </td>
+
+        <td>
+          <%= time_ago_in_words(an_event.created_at) %> ago
+        </td>
+        <td>
+          <%= time_ago_in_words(an_event.updated_at) %> ago
+        </td>
+
+        <td>
+          <a href="/events/<%= an_event.id %>">
+            Show details
+          </a>
+        </td>
+      </tr>
+      <% end %>
+    </table>
+  </div>
+</div>
+
+<hr>

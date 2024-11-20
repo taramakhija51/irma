@@ -1,0 +1,236 @@
+<div>
+  <div>
+    <h1>
+      Contact #<%= @the_contact.id %> details
+    </h1>
+
+    <div>
+      <div>
+        <a href="/contacts">
+          Go back
+        </a>
+      </div>
+
+      <div>
+        <a href="/delete_contact/<%= @the_contact.id %>">
+          Delete contact
+        </a>
+      </div>
+    </div>
+
+    <dl>
+      <dt>
+        Date first met
+      </dt>
+      <dd>
+        <%= @the_contact.date_first_met %>
+      </dd>
+
+      <dt>
+        Current employer
+      </dt>
+      <dd>
+        <%= @the_contact.current_employer %>
+      </dd>
+
+      <dt>
+        Partner
+      </dt>
+      <dd>
+        <%= @the_contact.partner %>
+      </dd>
+
+      <dt>
+        Most recent contact date
+      </dt>
+      <dd>
+        <%= @the_contact.most_recent_contact_date %>
+      </dd>
+
+      <dt>
+        Communication frequency
+      </dt>
+      <dd>
+        <%= @the_contact.communication_frequency %>
+      </dd>
+
+      <dt>
+        Industry
+      </dt>
+      <dd>
+        <%= @the_contact.industry %>
+      </dd>
+
+      <dt>
+        Role
+      </dt>
+      <dd>
+        <%= @the_contact.role %>
+      </dd>
+
+      <dt>
+        User
+      </dt>
+      <dd>
+        <%= @the_contact.user_id %>
+      </dd>
+
+      <dt>
+        Integer
+      </dt>
+      <dd>
+        <%= @the_contact.integer %>
+      </dd>
+
+      <dt>
+        Introduced by
+      </dt>
+      <dd>
+        <%= @the_contact.introduced_by_id %>
+      </dd>
+
+      <dt>
+        How met
+      </dt>
+      <dd>
+        <%= @the_contact.how_met %>
+      </dd>
+
+      <dt>
+        Notes
+      </dt>
+      <dd>
+        <%= @the_contact.notes %>
+      </dd>
+
+      <dt>
+        Created at
+      </dt>
+      <dd>
+        <%= time_ago_in_words(@the_contact.created_at) %> ago
+      </dd>
+
+      <dt>
+        Updated at
+      </dt>
+      <dd>
+        <%= time_ago_in_words(@the_contact.updated_at) %> ago
+      </dd>
+    </dl>
+  </div>
+</div>
+
+<hr>
+
+
+<div>
+  <div>
+    <h2>
+      Edit contact
+    </h2>
+
+    <form action="/modify_contact/<%= @the_contact.id %>"  method="post" >
+      <div>
+        <label for="date_first_met_box">
+          Date first met
+        </label>
+
+        <input type="date" id="date_first_met_box" name="query_date_first_met" value="<%= @the_contact.date_first_met %>">
+      </div>
+
+      <div>
+        <label for="current_employer_box">
+          Current employer
+        </label>
+
+        <input type="text" id="current_employer_box" name="query_current_employer" value="<%= @the_contact.current_employer %>">
+      </div>
+
+      <div>
+        <label for="partner_box">
+          Partner
+        </label>
+
+        <input type="text" id="partner_box" name="query_partner" value="<%= @the_contact.partner %>">
+      </div>
+
+      <div>
+        <label for="most_recent_contact_date_box">
+          Most recent contact date
+        </label>
+
+        <input type="date" id="most_recent_contact_date_box" name="query_most_recent_contact_date" value="<%= @the_contact.most_recent_contact_date %>">
+      </div>
+
+      <div>
+        <label for="communication_frequency_box">
+          Communication frequency
+        </label>
+
+        <input type="text" id="communication_frequency_box" name="query_communication_frequency" value="<%= @the_contact.communication_frequency %>">
+      </div>
+
+      <div>
+        <label for="industry_box">
+          Industry
+        </label>
+
+        <input type="text" id="industry_box" name="query_industry" value="<%= @the_contact.industry %>">
+      </div>
+
+      <div>
+        <label for="role_box">
+          Role
+        </label>
+
+        <input type="text" id="role_box" name="query_role" value="<%= @the_contact.role %>">
+      </div>
+
+      <div>
+        <label for="user_id_box">
+          User
+        </label>
+
+        <input type="text" id="user_id_box" name="query_user_id" value="<%= @the_contact.user_id %>">
+      </div>
+
+      <div>
+        <label for="integer_box">
+          Integer
+        </label>
+
+        <input type="text" id="integer_box" name="query_integer" value="<%= @the_contact.integer %>">
+      </div>
+
+      <div>
+        <label for="introduced_by_id_box">
+          Introduced by
+        </label>
+
+        <input type="text" id="introduced_by_id_box" name="query_introduced_by_id" value="<%= @the_contact.introduced_by_id %>">
+      </div>
+
+      <div>
+        <label for="how_met_box">
+          How met
+        </label>
+
+        <input type="text" id="how_met_box" name="query_how_met" value="<%= @the_contact.how_met %>">
+      </div>
+
+      <div>
+        <label for="notes_box">
+          Notes
+        </label>
+
+        <input type="text" id="notes_box" name="query_notes" value="<%= @the_contact.notes %>">
+      </div>
+
+      <button>
+        Update contact
+      </button>
+    </form>
+  </div>
+</div>
+
+<hr>

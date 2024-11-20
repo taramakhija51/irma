@@ -1,0 +1,262 @@
+<div>
+  <div>
+    <h1>
+      List of all contacts
+    </h1>
+  </div>
+</div>
+
+<hr>
+
+<div>
+  <div>
+    <h2>
+      Add a new contact
+    </h2>
+
+    <form action="/insert_contact" method="post">
+      <div>
+        <label for="date_first_met_box">
+          Date first met
+        </label>
+
+        <input type="date" id="date_first_met_box" name="query_date_first_met">
+      </div>
+
+      <div>
+        <label for="current_employer_box">
+          Current employer
+        </label>
+
+        <input type="text" id="current_employer_box" name="query_current_employer">
+      </div>
+
+      <div>
+        <label for="partner_box">
+          Partner
+        </label>
+
+        <input type="text" id="partner_box" name="query_partner">
+      </div>
+
+      <div>
+        <label for="most_recent_contact_date_box">
+          Most recent contact date
+        </label>
+
+        <input type="date" id="most_recent_contact_date_box" name="query_most_recent_contact_date">
+      </div>
+
+      <div>
+        <label for="communication_frequency_box">
+          Communication frequency
+        </label>
+
+        <input type="text" id="communication_frequency_box" name="query_communication_frequency">
+      </div>
+
+      <div>
+        <label for="industry_box">
+          Industry
+        </label>
+
+        <input type="text" id="industry_box" name="query_industry">
+      </div>
+
+      <div>
+        <label for="role_box">
+          Role
+        </label>
+
+        <input type="text" id="role_box" name="query_role">
+      </div>
+
+      <div>
+        <label for="user_id_box">
+          User
+        </label>
+
+        <input type="text" id="user_id_box" name="query_user_id">
+      </div>
+
+      <div>
+        <label for="integer_box">
+          Integer
+        </label>
+
+        <input type="text" id="integer_box" name="query_integer">
+      </div>
+
+      <div>
+        <label for="introduced_by_id_box">
+          Introduced by
+        </label>
+
+        <input type="text" id="introduced_by_id_box" name="query_introduced_by_id">
+      </div>
+
+      <div>
+        <label for="how_met_box">
+          How met
+        </label>
+
+        <input type="text" id="how_met_box" name="query_how_met">
+      </div>
+
+      <div>
+        <label for="notes_box">
+          Notes
+        </label>
+
+        <input type="text" id="notes_box" name="query_notes">
+      </div>
+
+      <button>
+        Create contact
+      </button>
+    </form>
+  </div>
+</div>
+
+<hr>
+<div>
+  <div>
+    <table border="1">
+      <tr>
+        <th>
+          ID
+        </th>
+
+        <th>
+          Date first met
+        </th>
+
+        <th>
+          Current employer
+        </th>
+
+        <th>
+          Partner
+        </th>
+
+        <th>
+          Most recent contact date
+        </th>
+
+        <th>
+          Communication frequency
+        </th>
+
+        <th>
+          Industry
+        </th>
+
+        <th>
+          Role
+        </th>
+
+        <th>
+          User
+        </th>
+
+        <th>
+          Integer
+        </th>
+
+        <th>
+          Introduced by
+        </th>
+
+        <th>
+          How met
+        </th>
+
+        <th>
+          Notes
+        </th>
+
+        <th>
+          Created at
+        </th>
+
+        <th>
+          Updated at
+        </th>
+
+        <th>
+        </th>
+      </tr>
+
+      <% @list_of_contacts.each do |a_contact| %>
+      <tr>
+        <td>
+          <%= a_contact.id %>
+        </td>
+
+        <td>
+          <%= a_contact.date_first_met %>
+        </td>
+
+        <td>
+          <%= a_contact.current_employer %>
+        </td>
+
+        <td>
+          <%= a_contact.partner %>
+        </td>
+
+        <td>
+          <%= a_contact.most_recent_contact_date %>
+        </td>
+
+        <td>
+          <%= a_contact.communication_frequency %>
+        </td>
+
+        <td>
+          <%= a_contact.industry %>
+        </td>
+
+        <td>
+          <%= a_contact.role %>
+        </td>
+
+        <td>
+          <%= a_contact.user_id %>
+        </td>
+
+        <td>
+          <%= a_contact.integer %>
+        </td>
+
+        <td>
+          <%= a_contact.introduced_by_id %>
+        </td>
+
+        <td>
+          <%= a_contact.how_met %>
+        </td>
+
+        <td>
+          <%= a_contact.notes %>
+        </td>
+
+        <td>
+          <%= time_ago_in_words(a_contact.created_at) %> ago
+        </td>
+        <td>
+          <%= time_ago_in_words(a_contact.updated_at) %> ago
+        </td>
+
+        <td>
+          <a href="/contacts/<%= a_contact.id %>">
+            Show details
+          </a>
+        </td>
+      </tr>
+      <% end %>
+    </table>
+  </div>
+</div>
+
+<hr>

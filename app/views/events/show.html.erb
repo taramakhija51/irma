@@ -1,0 +1,146 @@
+<div>
+  <div>
+    <h1>
+      Event #<%= @the_event.id %> details
+    </h1>
+
+    <div>
+      <div>
+        <a href="/events">
+          Go back
+        </a>
+      </div>
+
+      <div>
+        <a href="/delete_event/<%= @the_event.id %>">
+          Delete event
+        </a>
+      </div>
+    </div>
+
+    <dl>
+      <dt>
+        Event type
+      </dt>
+      <dd>
+        <%= @the_event.event_type %>
+      </dd>
+
+      <dt>
+        Event date
+      </dt>
+      <dd>
+        <%= @the_event.event_date %>
+      </dd>
+
+      <dt>
+        Event location
+      </dt>
+      <dd>
+        <%= @the_event.event_location %>
+      </dd>
+
+      <dt>
+        Contact
+      </dt>
+      <dd>
+        <%= @the_event.contact_id %>
+      </dd>
+
+      <dt>
+        User
+      </dt>
+      <dd>
+        <%= @the_event.user_id %>
+      </dd>
+
+      <dt>
+        Intention
+      </dt>
+      <dd>
+        <%= @the_event.intention %>
+      </dd>
+
+      <dt>
+        Created at
+      </dt>
+      <dd>
+        <%= time_ago_in_words(@the_event.created_at) %> ago
+      </dd>
+
+      <dt>
+        Updated at
+      </dt>
+      <dd>
+        <%= time_ago_in_words(@the_event.updated_at) %> ago
+      </dd>
+    </dl>
+  </div>
+</div>
+
+<hr>
+
+
+<div>
+  <div>
+    <h2>
+      Edit event
+    </h2>
+
+    <form action="/modify_event/<%= @the_event.id %>"  method="post" >
+      <div>
+        <label for="event_type_box">
+          Event type
+        </label>
+
+        <input type="text" id="event_type_box" name="query_event_type" value="<%= @the_event.event_type %>">
+      </div>
+
+      <div>
+        <label for="event_date_box">
+          Event date
+        </label>
+
+        <input type="date" id="event_date_box" name="query_event_date" value="<%= @the_event.event_date %>">
+      </div>
+
+      <div>
+        <label for="event_location_box">
+          Event location
+        </label>
+
+        <input type="text" id="event_location_box" name="query_event_location" value="<%= @the_event.event_location %>">
+      </div>
+
+      <div>
+        <label for="contact_id_box">
+          Contact
+        </label>
+
+        <input type="text" id="contact_id_box" name="query_contact_id" value="<%= @the_event.contact_id %>">
+      </div>
+
+      <div>
+        <label for="user_id_box">
+          User
+        </label>
+
+        <input type="text" id="user_id_box" name="query_user_id" value="<%= @the_event.user_id %>">
+      </div>
+
+      <div>
+        <label for="intention_box">
+          Intention
+        </label>
+
+        <input type="text" id="intention_box" name="query_intention" value="<%= @the_event.intention %>">
+      </div>
+
+      <button>
+        Update event
+      </button>
+    </form>
+  </div>
+</div>
+
+<hr>
