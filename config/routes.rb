@@ -75,7 +75,7 @@ Rails.application.routes.draw do
 
   #------------------------------
 
-root "boards#index"
+root "contacts#index"
 
   # This is a blank app! Pick your first screen, build out the RCAV, and go from there. E.g.:
 

@@ -54,13 +54,5 @@ class InteractionsController < ApplicationController
     redirect_to("/interactions", { :notice => "Interaction deleted successfully."} )
   end
 
-  belongs_to(:event,
-    class_name: "Event",
-    foreign_key: "event_id"
-  )
 
-  belongs_to(:contact,
-  class_name: "Contact",
-  foreign_key: "contact_id"
-)
 end

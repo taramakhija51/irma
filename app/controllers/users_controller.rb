@@ -58,9 +58,5 @@ class UsersController < ApplicationController
     redirect_to("/users", { :notice => "User deleted successfully."} )
   end
 
-  has_many(:contacts,
-  class_name: "Contact",
-  foreign_key: "user_id"
-)
 
 end

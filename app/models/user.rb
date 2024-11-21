@@ -11,4 +11,9 @@
 #  updated_at :datetime         not null
 #
 class User < ApplicationRecord
+  has_many(:contacts,
+  class_name: "Contact",
+  foreign_key: "user_id"
+)
+
 end

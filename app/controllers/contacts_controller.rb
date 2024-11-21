@@ -74,13 +74,5 @@ class ContactsController < ApplicationController
     redirect_to("/contacts", { :notice => "Contact deleted successfully."} )
   end
 
-  has_many(:interactions,
-  class_name: "Interaction",
-  foreign_key: "contact_id"
-)
 
-belongs_to(:user,
-class_name: "User",
-foreign_key: "user_id"
-)
 end

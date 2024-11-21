@@ -19,4 +19,13 @@
 #  user_id                  :string
 #
 class Contact < ApplicationRecord
+  has_many(:interactions,
+  class_name: "Interaction",
+  foreign_key: "contact_id"
+)
+
+belongs_to(:user,
+class_name: "User",
+foreign_key: "user_id"
+)
 end
