@@ -1,14 +1,12 @@
 # == Schema Information
 #
-# Table name: users
+# Table name: interactions
 #
 #  id         :bigint           not null, primary key
-#  email      :string
-#  first_name :string
-#  last_name  :string
-#  password   :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  contact_id :integer
+#  event_id   :integer
 #
-class User < ApplicationRecord
+class Interaction < ApplicationRecord
 end

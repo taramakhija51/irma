@@ -1,0 +1,102 @@
+<div>
+  <div>
+    <h1>
+      List of all interactions
+    </h1>
+  </div>
+</div>
+
+<hr>
+
+<div>
+  <div>
+    <h2>
+      Add a new interaction
+    </h2>
+
+    <form action="/insert_interaction" method="post">
+      <div>
+        <label for="contact_id_box">
+          Contact
+        </label>
+
+        <input type="text" id="contact_id_box" name="query_contact_id">
+      </div>
+
+      <div>
+        <label for="event_id_box">
+          Event
+        </label>
+
+        <input type="text" id="event_id_box" name="query_event_id">
+      </div>
+
+      <button>
+        Create interaction
+      </button>
+    </form>
+  </div>
+</div>
+
+<hr>
+<div>
+  <div>
+    <table border="1">
+      <tr>
+        <th>
+          ID
+        </th>
+
+        <th>
+          Contact
+        </th>
+
+        <th>
+          Event
+        </th>
+
+        <th>
+          Created at
+        </th>
+
+        <th>
+          Updated at
+        </th>
+
+        <th>
+        </th>
+      </tr>
+
+      <% @list_of_interactions.each do |an_interaction| %>
+      <tr>
+        <td>
+          <%= an_interaction.id %>
+        </td>
+
+        <td>
+          <%= an_interaction.contact_id %>
+        </td>
+
+        <td>
+          <%= an_interaction.event_id %>
+        </td>
+
+        <td>
+          <%= time_ago_in_words(an_interaction.created_at) %> ago
+        </td>
+        <td>
+          <%= time_ago_in_words(an_interaction.updated_at) %> ago
+        </td>
+
+        <td>
+          <a href="/interactions/<%= an_interaction.id %>">
+            Show details
+          </a>
+        </td>
+      </tr>
+      <% end %>
+    </table>
+  </div>
+</div>
+
+<hr>

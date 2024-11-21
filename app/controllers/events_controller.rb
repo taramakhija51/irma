@@ -61,4 +61,14 @@ class EventsController < ApplicationController
 
     redirect_to("/events", { :notice => "Event deleted successfully."} )
   end
+
+  has_many(:contacts,
+  through: :interactions,
+  source: :contact
+)
+
+has_many(:interactions,
+    class_name: "Interaction",
+    foreign_key: "event_id"
+  )
 end

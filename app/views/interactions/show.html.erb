@@ -1,0 +1,86 @@
+<div>
+  <div>
+    <h1>
+      Interaction #<%= @the_interaction.id %> details
+    </h1>
+
+    <div>
+      <div>
+        <a href="/interactions">
+          Go back
+        </a>
+      </div>
+
+      <div>
+        <a href="/delete_interaction/<%= @the_interaction.id %>">
+          Delete interaction
+        </a>
+      </div>
+    </div>
+
+    <dl>
+      <dt>
+        Contact
+      </dt>
+      <dd>
+        <%= @the_interaction.contact_id %>
+      </dd>
+
+      <dt>
+        Event
+      </dt>
+      <dd>
+        <%= @the_interaction.event_id %>
+      </dd>
+
+      <dt>
+        Created at
+      </dt>
+      <dd>
+        <%= time_ago_in_words(@the_interaction.created_at) %> ago
+      </dd>
+
+      <dt>
+        Updated at
+      </dt>
+      <dd>
+        <%= time_ago_in_words(@the_interaction.updated_at) %> ago
+      </dd>
+    </dl>
+  </div>
+</div>
+
+<hr>
+
+
+<div>
+  <div>
+    <h2>
+      Edit interaction
+    </h2>
+
+    <form action="/modify_interaction/<%= @the_interaction.id %>"  method="post" >
+      <div>
+        <label for="contact_id_box">
+          Contact
+        </label>
+
+        <input type="text" id="contact_id_box" name="query_contact_id" value="<%= @the_interaction.contact_id %>">
+      </div>
+
+      <div>
+        <label for="event_id_box">
+          Event
+        </label>
+
+        <input type="text" id="event_id_box" name="query_event_id" value="<%= @the_interaction.event_id %>">
+      </div>
+
+      <button>
+        Update interaction
+      </button>
+    </form>
+  </div>
+</div>
+
+<hr>

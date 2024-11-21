@@ -1,4 +1,23 @@
 Rails.application.routes.draw do
+  # Routes for the Interaction resource:
+
+  # CREATE
+  post("/insert_interaction", { :controller => "interactions", :action => "create" })
+          
+  # READ
+  get("/interactions", { :controller => "interactions", :action => "index" })
+  
+  get("/interactions/:path_id", { :controller => "interactions", :action => "show" })
+  
+  # UPDATE
+  
+  post("/modify_interaction/:path_id", { :controller => "interactions", :action => "update" })
+  
+  # DELETE
+  get("/delete_interaction/:path_id", { :controller => "interactions", :action => "destroy" })
+
+  #------------------------------
+
   # Routes for the Event resource:
 
   # CREATE
