@@ -12,5 +12,15 @@
 
   <body>
     <%= yield %>
+        <nav>
+    <%if current_user =! nil%>
+      <a href="/sign_out">Sign out</a>
+      <a href="/edit">Edit</a>
+    <%else%>
+      <a href="/sign_up">Sign up</a>
+      <a href="/sign_in">Sign in</a>
+    <%end%>  
+      <a href="/">Bulletin Board</a>
+    </nav>
   </body>
 </html>
