@@ -2,6 +2,7 @@
   <div>
     <h1>
       Contact #<%= @the_contact.id %> details
+      
     </h1>
 
     <div>
@@ -186,17 +187,13 @@
         <input type="text" id="role_box" name="query_role" value="<%= @the_contact.role %>">
       </div>
 
-      <div>
-        <label for="user_id_box">
-          User
-        </label>
+     <input type="hidden" id="user_id_box" name="query_user_id" value="<%= @the_contact.user_id %>">
 
-        <input type="hidden" id="user_id_box" name="query_user_id" value="<%= @the_contact.user_id %>">
-      </div>
+
 
       <div>
         <label for="integer_box">
-          Integer
+          Introduced By
         </label>
 
         <input type="hidden" id="integer_box" name="query_integer" value="<%= @the_contact.integer %>">

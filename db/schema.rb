@@ -23,12 +23,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_21_031436) do
     t.string "industry"
     t.string "role"
     t.string "user_id"
-    t.string "integer"
     t.string "introduced_by_id"
     t.string "how_met"
     t.string "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "First Name"
+    t.text "Last Name"
   end
 
   create_table "events", force: :cascade do |t|

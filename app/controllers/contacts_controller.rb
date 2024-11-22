@@ -19,6 +19,8 @@ class ContactsController < ApplicationController
 
   def create
     the_contact = Contact.new
+    the_contact.first_name = params.fetch("query_first_name")
+    the_contact.last_name = params.fetch("query_last_name")
     the_contact.date_first_met = params.fetch("query_date_first_met")
     the_contact.current_employer = params.fetch("query_current_employer")
     the_contact.partner = params.fetch("query_partner")

@@ -15,6 +15,22 @@
     </h2>
 
     <form action="/insert_contact" method="post">
+
+          <div>
+        <label for="first_name">
+          First Name
+        </label>
+
+        <input type="text" id="first_name_box" name="query_first_name">
+      </div>
+          <div>
+        <label for="last_name">
+          Last Name
+        </label>
+
+        <input type="text" id="last_name_box" name="query_last_name">
+      </div>
+
       <div>
         <label for="date_first_met_box">
           Date first met
@@ -72,19 +88,7 @@
       </div>
 
       <div>
-        <label for="user_id_box">
-          User ID
-        </label>
-
-        <input type="text" id="user_id_box" name="query_user_id">
-      </div>
-
-      <div>
-        <label for="integer_box">
-          Integer
-        </label>
-
-        <input type="text" id="integer_box" name="query_integer">
+        <input type="hidden" id="user_id_box" name="query_user_id">
       </div>
 
       <div>

@@ -28,4 +28,5 @@ belongs_to(:user,
 class_name: "User",
 foreign_key: "user_id"
 )
+attr_accessor :first_name, :last_name, :date_first_met, :current_employer, :partner, :most_recent_contact_date, :communication_frequency, :industry, :role, :user_id, :introduced_by_id, :how_met, :notes
 end
