@@ -1,8 +1,7 @@
 Rails.application.routes.draw do
   devise_for :users
-  
+  root "contacts#index"
   # Alias for sign-out
-  get "/sign_out", to: "devise/sessions#destroy"
 
   # Routes for the Interaction resource:
   post("/insert_interaction", { :controller => "interactions", :action => "create" })
@@ -32,5 +31,5 @@ Rails.application.routes.draw do
   post("/modify_user/:path_id", { :controller => "users", :action => "update" })
   get("/delete_user/:path_id", { :controller => "users", :action => "destroy" })
 
-  root "contacts#index"
+  
 end

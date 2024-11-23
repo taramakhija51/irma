@@ -11,14 +11,13 @@
   </head>
 
   <body>
-    <%= yield %>
-        <nav>
-    <%if current_user =! nil%>
-      <a href="/sign_out">Sign out</a>
-      <a href="/edit">Edit</a>
+    <nav>
+    <%if current_user != nil%>
+      <a href="/users/sign_out">Sign out</a>
+      <a href="/users/edit">Edit</a>
     <%else%>
-      <a href="/sign_up">Sign up</a>
-      <a href="/sign_in">Sign in</a>
+      <a href="/users/sign_up">Sign up</a>
+      <a href="/users/sign_in">Sign in</a>
     <%end%>  
       <a href="/">Bulletin Board</a>
     </nav>
