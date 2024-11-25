@@ -12,6 +12,7 @@
 
   <body>
     <nav>
+    
     <%if current_user != nil%>
       <a href="/users/sign_out">Sign out</a>
       <a href="/users/edit">Edit</a>
@@ -21,5 +22,6 @@
     <%end%>  
       <a href="/">Bulletin Board</a>
     </nav>
+    <%=yield%>
   </body>
 </html>
