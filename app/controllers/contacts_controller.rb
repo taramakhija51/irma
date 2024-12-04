@@ -18,29 +18,30 @@ class ContactsController < ApplicationController
   end
 
   def create
-    the_contact = Contact.new
-    the_contact.first_name = params.fetch("query_first_name")
-    the_contact.last_name = params.fetch("query_last_name")
-    the_contact.date_first_met = params.fetch("query_date_first_met")
-    the_contact.current_employer = params.fetch("query_current_employer")
-    the_contact.partner = params.fetch("query_partner")
-    the_contact.most_recent_contact_date = params.fetch("query_most_recent_contact_date")
-    the_contact.communication_frequency = params.fetch("query_communication_frequency")
-    the_contact.industry = params.fetch("query_industry")
-    the_contact.role = params.fetch("query_role")
-    the_contact.user_id = params.fetch("query_user_id")
-    the_contact.integer = params.fetch("query_integer")
-    the_contact.introduced_by_id = params.fetch("query_introduced_by_id")
-    the_contact.how_met = params.fetch("query_how_met")
-    the_contact.notes = params.fetch("query_notes")
-
-    if the_contact.valid?
-      the_contact.save
-      redirect_to("/contacts", { :notice => "Contact created successfully." })
+    the_contact = Contact.new(
+      first_name: params["query_first_name"],
+      last_name: params["query_last_name"],
+      date_first_met: params["query_date_first_met"],
+      current_employer: params["query_current_employer"],
+      partner: params["query_partner"],
+      most_recent_contact_date: params["query_most_recent_contact_date"],
+      communication_frequency: params["query_communication_frequency"],
+      industry: params["query_industry"],
+      role: params["query_role"],
+      user_id: params["query_user_id"],
+      introduced_by_id: params["query_introduced_by_id"],
+      how_met: params["query_how_met"],
+      notes: params["query_notes"]
+    )
+  
+    if the_contact.save
+      redirect_to("/contacts", { notice: "Contact created successfully." })
     else
-      redirect_to("/contacts", { :alert => the_contact.errors.full_messages.to_sentence })
+      Rails.logger.debug(the_contact.errors.full_messages)
+      redirect_to("/contacts", { alert: the_contact.errors.full_messages.to_sentence })
     end
   end
+  
 
   def update
     the_id = params.fetch("path_id")
