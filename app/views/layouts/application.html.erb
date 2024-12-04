@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Rails Template</title>
+    <title>irma./title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -12,7 +12,6 @@
 
   <body>
     <nav>
-    
     <%if current_user != nil%>
       <a href="/users/sign_out">Sign out</a>
       <a href="/users/edit">Edit</a>
@@ -22,6 +21,21 @@
     <%end%>  
       <a href="/">Bulletin Board</a>
     </nav>
-    <%=yield%>
+
+    <hr>
+
+    <% if notice.present? %>
+      <div style="color: green">
+        <%= notice %>
+      </div>
+    <% end %>
+
+    <% if alert.present? %>
+      <div style="color: red">
+        <%= alert %>
+      </div>
+    <% end %>
+
+    <%= yield %>
   </body>
 </html>
