@@ -15,12 +15,18 @@
 
   <body>
     <nav>
+
     <%if current_user != nil%>
-      <a href="/users/sign_out">Sign out</a>
+      <%=p current_user%>
+      <a href="/users/sign_out" data-method="delete" rel="nofollow">Sign out</a>
+
       <a href="/users/edit">Edit</a>
-    <%else%>
+    <%elsif current_user == nil%>
+      <%=p current_user%>
       <a href="/users/sign_up">Sign up</a>
       <a href="/users/sign_in">Sign in</a>
+    <%else%>
+      <%=p current_user%>
     <%end%>  
       <a href="/">Home</a>
     </nav>

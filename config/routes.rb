@@ -24,12 +24,7 @@ Rails.application.routes.draw do
   post("/modify_contact/:path_id", { :controller => "contacts", :action => "update" })
   get("/delete_contact/:path_id", { :controller => "contacts", :action => "destroy" })
 
-  # Routes for the User resource:
-  post("/insert_user", { :controller => "users", :action => "create" })
-  get("/users", { :controller => "users", :action => "index" })
-  get("/users/:path_id", { :controller => "users", :action => "show" })
-  post("/modify_user/:path_id", { :controller => "users", :action => "update" })
-  get("/delete_user/:path_id", { :controller => "users", :action => "destroy" })
+
 
   
 end
