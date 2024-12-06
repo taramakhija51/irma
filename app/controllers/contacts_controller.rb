@@ -1,24 +1,32 @@
 class ContactsController < ApplicationController
   def index
-    matching_contacts = Contact.all
-
-    @list_of_contacts = matching_contacts.order({ :created_at => :desc })
-
+    @list_of_contacts = Contact.where(user_id: current_user.id).order(created_at: :desc)
     render({ :template => "contacts/index" })
+
   end
 
   def show
     the_id = params.fetch("path_id")
+    @the_contact = Contact.find_by(id: the_id, user_id: current_user.id)
 
-    matching_contacts = Contact.where({ :id => the_id })
-
-    @the_contact = matching_contacts.at(0)
-
-    render({ :template => "contacts/show" })
+    if @the_contact.nil?
+      redirect_to("/contacts", alert: "Contact not found or you don't have permission to view this contact.")
+    else
+      render({ :template => "contacts/show" })
+    end
   end
+
 
   def create
     Rails.logger.debug(params.inspect) # Debugging
+    Rails.logger.debug "Current User: #{current_user.inspect}"
+    the_user = User.where(id: current_user.id).first
+    Rails.logger.debug "Fetched User: #{the_user.inspect}"
+    if the_user.nil?
+      Rails.logger.debug "No user found with ID #{current_user.id}. User is likely not logged in."
+      redirect_to("/login", alert: "You must be logged in to create a contact.")
+      return
+    end
     the_contact = Contact.new(
       first_name: params["query_first_name"],
       last_name: params["query_last_name"],
@@ -29,7 +37,7 @@ class ContactsController < ApplicationController
       communication_frequency: params["query_communication_frequency"],
       industry: params["query_industry"],
       role: params["query_role"],
-      user_id: params["query_user_id"],
+      user_id: current_user.id,
       introduced_by_id: params["query_introduced_by_id"],
       how_met: params["query_how_met"],
       notes: params["query_notes"]
@@ -38,7 +46,7 @@ class ContactsController < ApplicationController
     if the_contact.save
       redirect_to("/contacts", { notice: "Contact created successfully." })
     else
-      Rails.logger.debug(the_contact.errors.full_messages) # Debugging errors
+      Rails.logger.debug(the_contact.errors.full_messages)  # Check the error messages for details
       redirect_to("/contacts", { alert: the_contact.errors.full_messages.to_sentence })
     end
   end
