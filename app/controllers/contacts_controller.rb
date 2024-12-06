@@ -18,6 +18,7 @@ class ContactsController < ApplicationController
   end
 
   def create
+    Rails.logger.debug(params.inspect) # Debugging
     the_contact = Contact.new(
       first_name: params["query_first_name"],
       last_name: params["query_last_name"],
@@ -37,10 +38,11 @@ class ContactsController < ApplicationController
     if the_contact.save
       redirect_to("/contacts", { notice: "Contact created successfully." })
     else
-      Rails.logger.debug(the_contact.errors.full_messages)
+      Rails.logger.debug(the_contact.errors.full_messages) # Debugging errors
       redirect_to("/contacts", { alert: the_contact.errors.full_messages.to_sentence })
     end
   end
+  
   
 
   def update
