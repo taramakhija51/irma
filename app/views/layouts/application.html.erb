@@ -18,7 +18,7 @@
 
     <%if current_user != nil%>
       <%=p current_user%>
-      <a href="/users/sign_out" data-method="delete" rel="nofollow">Sign out</a>
+      <a href="/users/sign_out" data-method="get" rel="nofollow">Sign out</a>
 
       <a href="/users/edit">Edit</a>
     <%elsif current_user == nil%>
