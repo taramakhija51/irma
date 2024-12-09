@@ -9,7 +9,6 @@
 #  intention      :string
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
-#  contact_id     :integer
 #  user_id        :integer
 #
 class Event < ApplicationRecord

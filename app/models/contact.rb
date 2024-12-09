@@ -26,6 +26,12 @@ class Contact < ApplicationRecord
   foreign_key: "contact_id"
 )
 
+has_many(:events,
+through: interaction,
+source: event
+)
+
+
 belongs_to(:user,
 class_name: "User",
 foreign_key: "user_id"
