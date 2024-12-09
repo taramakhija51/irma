@@ -8,27 +8,33 @@ class InteractionsController < ApplicationController
   end
 
   def show
+    @the_contact = Contact.find_by(id: the_id, user_id: current_user.id)
     the_id = params.fetch("path_id")
 
     matching_interactions = Interaction.where({ :id => the_id })
 
     @the_interaction = matching_interactions.at(0)
 
+
     render({ :template => "interactions/show" })
   end
 
   def create
-    the_interaction = Interaction.new
-    the_interaction.contact_id = params.fetch("query_contact_id")
-    the_interaction.event_id = params.fetch("query_event_id")
-
-    if the_interaction.valid?
-      the_interaction.save
-      redirect_to("/interactions", { :notice => "Interaction created successfully." })
+    @event = Event.new
+    #@event.id = params.fetch("query_event_id")
+  
+    if @event.save
+      contact_ids = params.fetch("query_contact_id")
+      #contact_ids = @the_contact.id
+      contact_ids.each do |contact_id|
+        Interaction.create(:contact_id => contact_id, :event_id => @event.id)
+      end
+      redirect_to("/events", { :notice => "Event and interactions created successfully." })
     else
-      redirect_to("/interactions", { :alert => the_interaction.errors.full_messages.to_sentence })
+   p "not created successfully"
     end
   end
+  
 
   def update
     the_id = params.fetch("path_id")

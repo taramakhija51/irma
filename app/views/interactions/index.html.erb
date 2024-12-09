@@ -20,7 +20,7 @@
           Contact
         </label>
 
-        <input type="text" id="contact_id_box" name="query_contact_id" value="<%= current_user.id%>>
+        <input type="hidden" id="contact_id_box" name="query_contact_id" value="<%= @the_contact%>">
       </div>
 
       <div>
@@ -28,12 +28,9 @@
           Event
         </label>
 
-        <input type="text" id="event_id_box" name="query_event_id">
+        <input type="hidden" id="event_id_box" name="query_event_id" value="<%= @the_event%>">
       </div>
-
-      <button>
-        Create interaction
-      </button>
+      <button>submit</button>
     </form>
   </div>
 </div>
