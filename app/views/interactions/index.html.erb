@@ -16,11 +16,14 @@
 
     <form action="/insert_interaction" method="post">
       <div>
-        <label for="contact_id_box">
-          Contact
-        </label>
-
-        <input type="hidden" id="contact_id_box" name="query_contact_id" value="<%= @the_contact%>">
+        <label for="contact_id_box">Contact(s)</label>
+        <!-- Multiple input fields for contacts -->
+        <input type="hidden" select id="contact_id_box" name="query_contact_id[]" multiple>
+          <!-- Replace these options with dynamically generated contact IDs -->
+          <option value="1">Contact 1</option>
+          <option value="2">Contact 2</option>
+          <option value="3">Contact 3</option>
+        </select>
       </div>
 
       <div>

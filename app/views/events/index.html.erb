@@ -40,11 +40,14 @@
       </div>
 
       <div>
-        <label for="contact_id_box">
-          Contact
-        </label>
-
-        <input type="text" id="contact_id_box" name="query_contact_id">
+        <label for="contact_id_box">Contact(s)</label>
+        <!-- Multiple input fields for contacts -->
+        <select id="contact_id_box" name="query_contact_id[]" multiple>
+          <!-- Replace these options with dynamically generated contact IDs -->
+          <option value="1">Contact 1</option>
+          <option value="2">Contact 2</option>
+          <option value="3">Contact 3</option>
+        </select>
       </div>
 
       <div>
@@ -52,7 +55,7 @@
           User
         </label>
 
-        <input type="text" id="user_id_box" name="query_user_id">
+        <input type="hidden" id="user_id_box" name="query_user_id" value="<%=current_user.id%>
       </div>
 
       <div>

@@ -22,7 +22,7 @@ class EventsController < ApplicationController
     the_event.event_type = params.fetch("query_event_type")
     the_event.event_date = params.fetch("query_event_date")
     the_event.event_location = params.fetch("query_event_location")
-    the_event.contact_id = params.fetch("query_contact_id").to_i
+    the_event.contact_id = params.fetch("query_contact_id")
     the_event.user_id = params.fetch("query_user_id")
     the_event.intention = params.fetch("query_intention")
 
