@@ -27,8 +27,8 @@ class Contact < ApplicationRecord
 )
 
 has_many(:events,
-through: interaction,
-source: event
+through: :interactions,
+source: :event
 )
 
 
