@@ -14,7 +14,7 @@ Rails.application.routes.draw do
   post("/insert_event", { :controller => "events", :action => "create" })
   get("/events", { :controller => "events", :action => "index" })
   get("/events/:path_id", { :controller => "events", :action => "show" })
-  post("/modify_event/:path_id", { :controller => "events", :action => "update" })
+  patch("/modify_event/:path_id", { :controller => "events", :action => "update" })
   get("/delete_event/:path_id", { :controller => "events", :action => "destroy" })
 
   # Routes for the Contact resource:

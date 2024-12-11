@@ -12,13 +12,14 @@
 #  user_id        :integer
 #
 class Event < ApplicationRecord
-  has_many(:contacts,
-  through: :interactions,
-  source: :contact
-)
-
-has_many(:interactions,
+  has_many(:interactions,
     class_name: "Interaction",
     foreign_key: "event_id"
   )
+
+  has_many(:contacts,
+  through: :interactions,
+  source: :contact
+  )
+
 end

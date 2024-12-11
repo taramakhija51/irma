@@ -10,72 +10,6 @@
 
 <div>
   <div>
-    <h2>
-      Add a new event
-    </h2>
-
-    <form action="/insert_event" method="post">
-      <div>
-        <label for="event_type_box">
-          Event type
-        </label>
-
-        <input type="text" id="event_type_box" name="query_event_type">
-      </div>
-
-      <div>
-        <label for="event_date_box">
-          Event date
-        </label>
-
-        <input type="date" id="event_date_box" name="query_event_date">
-      </div>
-
-      <div>
-        <label for="event_location_box">
-          Event location
-        </label>
-
-        <input type="text" id="event_location_box" name="query_event_location">
-      </div>
-
-      <div>
-        <label for="contact_id_box">Contact(s)</label>
-        <!-- Multiple input fields for contacts -->
-        <select id="contact_id_box" name="query_contact_id[]" multiple>
-          <!-- Replace these options with dynamically generated contact IDs -->
-          <option value="1">Contact 1</option>
-          <option value="2">Contact 2</option>
-          <option value="3">Contact 3</option>
-        </select>
-      </div>
-
-      <div>
-        <label for="user_id_box">
-          User
-        </label>
-
-        <input type="hidden" id="user_id_box" name="query_user_id" value="<%=current_user.id%>
-      </div>
-
-      <div>
-        <label for="intention_box">
-          Intention
-        </label>
-
-        <input type="text" id="intention_box" name="query_intention">
-      </div>
-
-      <button>
-        Create event
-      </button>
-    </form>
-  </div>
-</div>
-
-<hr>
-<div>
-  <div>
     <table border="1">
       <tr>
         <th>
@@ -95,7 +29,7 @@
         </th>
 
         <th>
-          Contact
+          Contact(s)
         </th>
 
         <th>
@@ -137,7 +71,8 @@
         </td>
 
         <td>
-          <%= an_event.contact_id %>
+          <!-- Display the associated contacts for this event -->
+          <%= an_event.contacts.map { |contact| "#{contact.first_name} #{contact.last_name}" }.join(", ") %>
         </td>
 
         <td>

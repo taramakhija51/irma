@@ -13,7 +13,7 @@ class EventsController < ApplicationController
     matching_events = Event.where({ :id => the_id })
 
     @the_event = matching_events.at(0)
-
+    @all_contacts = Contact.all
     render({ :template => "events/show" })
   end
 
@@ -43,7 +43,7 @@ class EventsController < ApplicationController
   def update
     the_id = params.fetch("path_id")
     the_event = Event.where({ :id => the_id }).at(0)
-
+    @all_contacts = Contact.all
     the_event.event_type = params.fetch("query_event_type")
     the_event.event_date = params.fetch("query_event_date")
     the_event.event_location = params.fetch("query_event_location")
@@ -59,6 +59,7 @@ class EventsController < ApplicationController
     end
   end
 
+  
   def destroy
     the_id = params.fetch("path_id")
     the_event = Event.where({ :id => the_id }).at(0)
