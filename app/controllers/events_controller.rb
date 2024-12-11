@@ -36,7 +36,8 @@ class EventsController < ApplicationController
   private
   
   def event_params
-    params.permit(:query_event_type, :query_event_date, :query_event_location, :query_user_id, :query_intention)
+    params.permit(:query_event_type, :query_event_date, :query_event_location, :query_user_id, :query_intention, query_contact_ids: [])
+
   end
   
 
@@ -47,7 +48,11 @@ class EventsController < ApplicationController
     the_event.event_type = params.fetch("query_event_type")
     the_event.event_date = params.fetch("query_event_date")
     the_event.event_location = params.fetch("query_event_location")
-    the_event.contact_id = params.fetch("query_contact_id")
+    #the_event.contact_id = params.fetch("query_contact_id")
+    contact_ids = params[:query_contact_ids] || []
+    the_event.contacts = Contact.where(id: contact_ids) # Assuming a `has_many :contacts` association
+    
+
     the_event.user_id = params.fetch("query_user_id")
     the_event.intention = params.fetch("query_intention")
 
