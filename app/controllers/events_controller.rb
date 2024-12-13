@@ -8,8 +8,9 @@ class EventsController < ApplicationController
   end
 
   def show
+    client = OpenAI::Client.new(access_token: ENV['OPENAI_KEY'])
     the_id = params.fetch("path_id")
-
+    user_content = params.fetch("user_content", "")
     matching_events = Event.where({ :id => the_id })
 
     @the_event = matching_events.at(0)

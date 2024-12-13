@@ -1,3 +1,5 @@
+require 'openai'
+client = OpenAI::Client.new(access_token: ENV['OPENAI_KEY'])
 <div>
   <div>
     <h1>
@@ -17,6 +19,52 @@
         </a>
       </div>
     </div>
+
+<div>
+  <form action="/events/:path_id" method="post">
+    <div>
+      <label for="user_content">
+        User Content
+      </label>
+
+  
+      <input type="text" id="user_content" name="user_content">
+    </div>
+    <button type="submit">Submit</button>
+  </form>
+</div>
+
+
+user_content = params.fetch("user_content", "")
+
+<%= client = OpenAI::Client.new(access_token: ENV.fetch("OPENAI_API_KEY")) %>
+<% 
+# Prepare an Array of previous messages
+message_list = [
+  {
+    "role" => "system",
+    "content" => "Draft a thank you email after networking with someone. You met with them via a format of #{@the_event.event_type}, their name is  #{@the_event.contacts.map { |contact| "#{contact.first_name} #{contact.last_name}" }.join(", ")}.The user will input some takeaways from the meeting. You want the tone to be friendly, but professional, acknowledging the user is likely not very close with the person. Emphasize WARMTH coming across. Keep it under one paragraph."
+  },
+  {
+    "role" => "user",
+    "content" => user_content
+  }
+]
+# Call the API to get the next message from GPT
+api_response = client.chat(
+  parameters: {
+    model: "gpt-3.5-turbo",
+    messages: message_list
+  }
+)
+%>
+<%= api_response %>
+<div style="height: 500px"></div>
+</div>
+
+
+
+
 
     <dl>
       <dt>Event type</dt>
