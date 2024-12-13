@@ -5,17 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Horizontal Card Carousel</title>
     <div class="irma">
-    <a href="/">
-      <%= image_tag "irmatext.png", alt: "irma" %>
-    </a>
-  </div>
+
 
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Mostra+Nuova:wght@400&display=swap'); /* Import font */
 
 
     body {
-      font-family: 'Mostra Nuova', sans-serif;
+      font-family: mostra-nuova, sans-serif;
+      font-style: normal;
+      font-weight: 200;
       margin: 0;
       padding: 0;
       display: flex;
@@ -106,9 +105,9 @@
       <p><%= event.event_location %></p>
       <pre>
       <p><strong>Date:</strong> <%= event.event_date.strftime("%B %d, %Y") %></p>
-      <button href="/events/<%= event.id %>">
-            Show details
-          </button>
+      <a href="/events/<%= event.id %>">
+        <button>Show details</button>
+      </a>
       </pre>
       </div>
   <% end %>
