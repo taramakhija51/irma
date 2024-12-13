@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Horizontal Card Carousel</title>
+    <div class="irma">
+    <a href="/">
+      <%= image_tag "irmatext.png", alt: "irma" %>
+    </a>
+  </div>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Mostra+Nuova:wght@400&display=swap'); /* Import font */
+
+
+    body {
+      font-family: 'Mostra Nuova', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .carousel-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+      width: 80%;
+      max-width: 800px;
+    }
+
+    .card-container {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      padding: 20px 0;
+    }
+
+    .card-container::-webkit-scrollbar {
+      display: none; /* Hide scrollbar */
+    }
+
+    .card {
+      flex: 0 0 200px;
+      height: 300px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #c1b09f;
+      color: #000000;
+      border-radius: 12px;
+      font-size: 1.5em;
+      transition: transform 0.3s ease, filter 0.3s ease;
+    }
+
+    .card:not(.highlight) {
+      filter: blur(3.75px) brightness(0.9);
+    }
+
+    .highlight {
+      transform: scale(1.1); 
+      filter: none;
+    }
+
+    .navigation-buttons {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    .nav-button {
+      background: #bd5927;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .nav-button:hover {
+      background: #9e332f;
+    }
+  </style>
+</head>
+<body>
+  <h1>Upcoming Events</h1>
+  <div class="carousel-container">
+<div class="card-container">
+  <% @list_of_events.each_with_index do |event, index| %>
+    <div style="text-align:center" class="card <%= 'highlight' if index == 0 %>">
+      <p><%= event.event_type %></p>
+      <p><%= event.event_location %></p>
+      <pre>
+      <p><strong>Date:</strong> <%= event.event_date.strftime("%B %d, %Y") %></p>
+      <button href="/events/<%= event.id %>">
+            Show details
+          </button>
+      </pre>
+      </div>
+  <% end %>
+</div>
+
+    <div class="navigation-buttons">
+      <button class="nav-button" id="prev">Previous</button>
+      <button class="nav-button" id="next">Next</button>
+    </div>
+  </div>
+
+  <script>
+    const cardContainer = document.querySelector('.card-container');
+    const cards = document.querySelectorAll('.card');
+    const prevButton = document.getElementById('prev');
+    const nextButton = document.getElementById('next');
+
+    let currentIndex = 0;
+
+    const updateHighlight = () => {
+      cards.forEach((card, index) => {
+        if (index === currentIndex) {
+          card.classList.add('highlight');
+        } else {
+          card.classList.remove('highlight');
+        }
+      });
+    };
+
+    const scrollToCard = (index) => {
+      cards[index].scrollIntoView({ behavior: 'smooth', inline: 'center' });
+    };
+
+    const showPrevious = () => {
+      if (currentIndex > 0) {
+        currentIndex--;
+        scrollToCard(currentIndex);
+        updateHighlight();
+      }
+    };
+
+    const showNext = () => {
+      if (currentIndex < cards.length - 1) {
+        currentIndex++;
+        scrollToCard(currentIndex);
+        updateHighlight();
+      }
+    };
+
+    prevButton.addEventListener('click', showPrevious);
+    nextButton.addEventListener('click', showNext);
+
+    // Initial setup
+    updateHighlight();
+  </script>
+</body>
+</html>

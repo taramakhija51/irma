@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   devise_for :users
-  root "contacts#index"
-
+  root "application#index"
+  get("/", { :controller => "application", :action => "index" })
   post("/insert_interaction", { :controller => "interactions", :action => "create" })
   get("/interactions", { :controller => "interactions", :action => "index" })
   get("/interactions/:path_id", { :controller => "interactions", :action => "show" })
