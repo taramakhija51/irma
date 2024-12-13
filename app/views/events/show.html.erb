@@ -55,10 +55,8 @@
     <h2>Edit event</h2>
 
     <form action="/modify_event/<%= @the_event.id %>" method="post">
-      <!-- CSRF token for security -->
-      <%= csrf_meta_tags %>
 
-      <input type="hidden" name="_method" value="patch">
+      <%= csrf_meta_tags %>
 
       <div>
         <label for="event_type_box">Event type</label>

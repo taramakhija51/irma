@@ -33,13 +33,6 @@ class EventsController < ApplicationController
     end
   end
   
-  private
-  
-  def event_params
-    params.permit(:query_event_type, :query_event_date, :query_event_location, :query_user_id, :query_intention, query_contact_ids: [])
-
-  end
-  
 
   def update
     the_id = params.fetch("path_id")
