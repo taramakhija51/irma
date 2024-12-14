@@ -21,28 +21,28 @@ class EventsController < ApplicationController
     render({ :template => "events/show" })
   end
 
-  def create
-    @event = Event.new(
-      event_type: params.fetch("query_event_type"),
-      event_date: params.fetch("query_event_date"),
-      event_location: params.fetch("query_event_location"),
-      intention: params.fetch("query_intention"),
-      user_id: params.fetch("query_user_id")
-    )
-    
-    contact_ids = params[:query_contact_ids] || []
-    
-    if @event.save
-      # Create Interaction records only after the event is saved successfully
-      contact_ids.each do |contact_id|
-        Interaction.create(contact_id: contact_id, event_id: @event.id)
-      end
-      redirect_to("/events", notice: "Event and interactions created successfully.")
-    else
-      redirect_to("/events", alert: "Event creation failed: #{@event.errors.full_messages.to_sentence}.")
-    end
-  end
+ def create
+  @event = Event.new(
+    event_type: params.fetch("query_event_type"),
+    event_date: params.fetch("query_event_date"),
+    event_location: params.fetch("query_event_location"),
+    intention: params.fetch("query_intention"),
+    user_id: params.fetch("query_user_id")
+  )
   
+  contact_ids = params[:query_contact_ids] || []
+  
+  if @event.save
+    # Create Interaction records only after the event is saved successfully
+    contact_ids.each do |contact_id|
+      Interaction.create(contact_id: contact_id, event_id: @event.id)
+    end
+    redirect_to("/events", notice: "Event and interactions created successfully.")
+  else
+    redirect_to("/events", alert: "Event creation failed: #{@event.errors.full_messages.to_sentence}.")
+  end
+end
+
 
 
   def update
