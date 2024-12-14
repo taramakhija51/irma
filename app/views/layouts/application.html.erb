@@ -6,7 +6,8 @@
       <%= image_tag "irmatext.png", alt: "irma" %>
     </a>
   </div>
-
+<a href="/events">Events</a>
+<a href="/events">Contacts</a>
 
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
@@ -20,7 +21,7 @@
     <nav>
 
     <%if current_user != nil%>
-      <%=p current_user%>
+      <%p current_user%>
       <a href="/users/sign_out" data-method="get" rel="nofollow">Sign out</a>
 
       <a href="/users/edit">Edit</a>
