@@ -8,13 +8,35 @@ class ContactsController < ApplicationController
   def show
     the_id = params.fetch("path_id")
     @the_contact = Contact.find_by(id: the_id, user_id: current_user.id)
+    events = @the_contact.events.order(:event_date)
+    relationship_strength = 0
+    data_points = []
+    last_event_date = nil
+    events.each do |event|
+      year_gap = last_event_date ? event.event_date.year - last_event_date.year : 0
+      relationship_strength -= year_gap if year_gap > 0
+      case event.intention
+      when "request"
+        relationship_strength -= 1
+      when "keeping in touch"
+        relationship_strength += 2
+      else
+        relationship_strength += 1
+      end
+      data_points << { date: event.event_date.strftime("%Y-%m-%d"), value: relationship_strength }
 
+      last_event_date = event.event_date
+    end
+
+    @chart_data = data_points
+  end
+end
     if @the_contact.nil?
       redirect_to("/contacts", alert: "Contact not found or you don't have permission to view this contact.")
     else
       render({ :template => "contacts/show" })
     end
-  end
+
 
 
   def create
@@ -88,4 +110,4 @@ class ContactsController < ApplicationController
   end
 
 
-end
+

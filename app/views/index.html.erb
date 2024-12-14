@@ -3,13 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Horizontal Card Carousel</title>
-    <div class="irma">
-
-
+  <title>Responsive Horizontal Card Carousel</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Mostra+Nuova:wght@400&display=swap'); /* Import font */
-
 
     body {
       font-family: mostra-nuova, sans-serif;
@@ -35,8 +30,8 @@
       flex-direction: column;
       align-items: center;
       overflow: hidden;
-      width: 80%;
-      max-width: 800px;
+      width: 100%; /* Full-width container */
+      max-width: 1000px;
     }
 
     .card-container {
@@ -44,7 +39,9 @@
       gap: 16px;
       overflow-x: auto;
       scroll-behavior: smooth;
-      padding: 20px 0;
+      padding: 20px 16px;
+      width: 100%;
+      box-sizing: border-box; 
     }
 
     .card-container::-webkit-scrollbar {
@@ -52,20 +49,30 @@
     }
 
     .card {
-      flex: 0 0 200px;
-      height: 300px;
+      flex: 0 0 calc(100% / 3); 
+      max-width: 300px;
+      height: auto;
+      min-height: 300px;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       background: #c1b09f;
       color: #000000;
       border-radius: 12px;
-      font-size: 1.5em;
+      font-size: 1.2em;
+      padding: 16px;
+      text-align: center;
+      box-sizing: border-box; 
       transition: transform 0.3s ease, filter 0.3s ease;
     }
 
+    .card p {
+      margin: 8px 0; 
+    }
+
     .card:not(.highlight) {
-      filter: blur(3.75px) brightness(0.9);
+      filter: blur(3px) brightness(0.9);
     }
 
     .highlight {
@@ -78,6 +85,7 @@
       justify-content: space-between;
       width: 100%;
       margin-top: 20px;
+      max-width: 1000px;
     }
 
     .nav-button {
@@ -96,27 +104,25 @@
   </style>
 </head>
 <body>
-  <h1 = font-family: mostra-nuova, sans-serif>Upcoming Events</h1>
+  <h1>Upcoming Events</h1>
   <div class="carousel-container">
-<div class="card-container">
-  <% @list_of_events.each_with_index do |event, index| %>
-    <div style="text-align:center" class="card <%= 'highlight' if index == 0 %>">
-      <p><%= event.event_type %></p>
-      <p><%= event.event_location %></p>
-      <pre>
-      <p><strong>Date:</strong> <%= event.event_date.strftime("%B %d, %Y") %></p>
-      <a href="/events/<%= event.id %>">
-        <button>Show details</button>
-      </a>
-      </pre>
-      </div>
-  <% end %>
-</div>
+    <div class="card-container">
+      <% @list_of_events.each_with_index do |event, index| %>
+        <div class="card <%= 'highlight' if index == 0 %>">
+          <p><strong>Type:</strong> <%= event.event_type %></p>
+          <p><strong>Location:</strong> <%= event.event_location %></p>
+          <p><strong>Date:</strong> <%= event.event_date.strftime("%B %d, %Y") %></p>
+          <a href="/events/<%= event.id %>">
+            <button>Show details</button>
+          </a>
+        </div>
+      <% end %>
+    </div>
 
-  <div class="navigation-buttons">
+    <div class="navigation-buttons">
       <button class="nav-button" id="prev">Previous</button>
       <button class="nav-button" id="next">Next</button>
-  </div>
+    </div>
   </div>
 
   <script>
@@ -138,7 +144,12 @@
     };
 
     const scrollToCard = (index) => {
-      cards[index].scrollIntoView({ behavior: 'smooth', inline: 'center' });
+      const cardWidth = cards[0].offsetWidth + 16; // Include gap
+      const scrollPosition = index * cardWidth - cardWidth / 2; // Center the card
+      cardContainer.scrollTo({
+        left: scrollPosition,
+        behavior: 'smooth',
+      });
     };
 
     const showPrevious = () => {
