@@ -9,7 +9,8 @@
 
 <canvas id="relationshipChart" width="400" height="200"></canvas>
 
-<script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js">
+
   document.addEventListener("DOMContentLoaded", () => {
     const chartData = <%= raw @chart_data.to_json %>;
 
