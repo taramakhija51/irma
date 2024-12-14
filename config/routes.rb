@@ -7,10 +7,11 @@ Rails.application.routes.draw do
   get("/interactions/:path_id", { :controller => "interactions", :action => "show" })
   post("/modify_interaction/:path_id", { :controller => "interactions", :action => "update" })
   get("/delete_interaction/:path_id", { :controller => "interactions", :action => "destroy" })
-
+  get("/insert_event", { :controller => "events", :action => "create" })
   post("/insert_event", { :controller => "events", :action => "create" })
   get("/events", { :controller => "events", :action => "index" })
   get("/events/:path_id", { :controller => "events", :action => "show" })
+  post("/events/:path_id", { :controller => "events", :action => "create" })
   post("/events/:path_id", { :controller => "events", :action => "show" })
   post("/modify_event/:path_id", { :controller => "events", :action => "update" })
   get("/delete_event/:path_id", { :controller => "events", :action => "destroy" })

@@ -10,7 +10,7 @@ class InteractionsController < ApplicationController
   def show
     the_id = params.fetch("path_id")
     @the_contact = Contact.find_by(id: the_id, user_id: current_user.id)
-    the_id = params.fetch("path_id")
+    #the_id = params.fetch("path_id")
 
     matching_interactions = Interaction.where({ :id => the_id })
 

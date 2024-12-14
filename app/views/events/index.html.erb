@@ -1,3 +1,47 @@
+<form action="/insert_event" method="post">
+<h2> Add a new event </h2>
+          <div>
+        <label for="event_type">
+         Event type
+        </label>
+
+        <input type="text" id="event_type" name="query_event_type">
+      </div>
+          <div>
+        <label for="event_date">
+          Event date
+        </label>
+
+        <input type="date" id="event_date" name="query_event_date">
+      </div>
+
+      <div>
+        <label for="event_location">
+          Event location
+        </label>
+
+        <input type="text" id="event_location" name="query_event_location">
+      </div>
+      <div>
+        <label for="intention">
+          Purpose of meeting
+        </label>
+
+        <select id="intention" name="query_intention">
+    <option value="Introduction">Introduction</option>
+    <option value="Advice">Advice</option>
+    <option value="Request">Request</option>
+    <option value="Keeping in touch">Keeping in touch</option>
+    <option value="Other">Other</option>
+  </select>
+      <button>
+        Create event
+      </button>
+    </form>
+  </div>
+</div>
+
+
 <div>
   <div>
     <h1>

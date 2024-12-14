@@ -19,10 +19,16 @@ class EventsController < ApplicationController
   end
 
   def create
-    @event = Event.new(event_params) # Strong parameters
-  
+    @event = Event.new
+    @all_contacts = Contact.all
+    @event.event_type = params.fetch("query_event_type")
+    @event.event_date = params.fetch("query_event_date")
+    @event.event_location = params.fetch("query_event_location")
+    #the_event.contact_id = params.fetch("query_contact_id")
+    contact_ids = params[:query_contact_ids] || []
+    @event.contacts = Contact.where(id: contact_ids) 
     if @event.save
-      contact_ids = params[:query_contact_id] || [] # Default to an empty array if no contacts are selected
+      contact_ids = params[:query_contact_id] || [] 
   
       contact_ids.each do |contact_id|
         Interaction.create(contact_id: contact_id, event_id: @event.id)
@@ -34,6 +40,8 @@ class EventsController < ApplicationController
     end
   end
   
+ 
+
 
   def update
     the_id = params.fetch("path_id")
