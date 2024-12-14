@@ -8,6 +8,8 @@
       <%= image_tag "irmatext.png", alt: "irma" %>
     </a>
   </div>
+  </head>
+  <body>
 <a href="/events">Events</a>
 <a href="/contacts">Contacts</a>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -16,9 +18,9 @@
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
-  </head>
 
-  <body>
+
+
     <nav>
 
     <%if current_user != nil%>
