@@ -6,6 +6,7 @@
 #  communication_frequency  :integer
 #  current_employer         :string
 #  date_first_met           :date
+#  embedding                :text
 #  first_name               :string
 #  how_met                  :string
 #  industry                 :string
@@ -37,4 +38,5 @@ class_name: "User",
 foreign_key: "user_id"
 )
 validates :user_id, presence: true
+serialize :embedding, Array
 end

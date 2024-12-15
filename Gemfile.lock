@@ -217,6 +217,8 @@ GEM
       activerecord
       kaminari-core (= 1.2.2)
     kaminari-core (1.2.2)
+    kmeans-clusterer (0.11.4)
+      narray (~> 0.6)
     llhttp-ffi (0.5.0)
       ffi-compiler (~> 1.0)
       rake (~> 13.0)
@@ -238,6 +240,7 @@ GEM
     msgpack (1.7.2)
     multipart-post (2.4.1)
     mutex_m (0.2.0)
+    narray (0.6.1.2)
     net-http (0.4.1)
       uri
     net-imap (0.4.11)
@@ -470,6 +473,7 @@ DEPENDENCIES
   http
   importmap-rails
   jbuilder
+  kmeans-clusterer
   openai
   pg (~> 1.1)
   pry-rails

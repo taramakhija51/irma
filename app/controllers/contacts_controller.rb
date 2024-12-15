@@ -1,11 +1,11 @@
+require 'kmeans-clusterer'
+
 class ContactsController < ApplicationController
-  # List all contacts for the current user
   def index
     @list_of_contacts = Contact.where(user_id: current_user.id).order(created_at: :desc)
     render({ template: "contacts/index" })
   end
 
-  # Show details of a specific contact
   def show
     the_id = params.fetch("path_id")
     @the_contact = Contact.find_by(id: the_id, user_id: current_user.id)
@@ -14,14 +14,35 @@ class ContactsController < ApplicationController
       redirect_to("/contacts", alert: "Contact not found or you don't have permission to view this contact.")
       return
     end
-  
-    # In your controller:
-    @chart_data = []
+
+    embedding = get_embeddings_for_text(@the_contact.how_met)
+
+    # Collect embeddings for all contacts
+    all_embeddings = Contact.where(user_id: current_user.id).pluck(:how_met).map do |how_met|
+      get_embeddings_for_text(how_met)
+    end
+
+    # Perform K-Means clustering on all embeddings
+    kmeans = KMeansClusterer.run(3, all_embeddings, runs: 100, random_seed: 42) # 3 clusters as an example
+
+    # Find the closest centroid for this contact's embedding
+    contact_cluster = kmeans.closest_centroid(embedding)
+
+    # Calculate the starting relationship strength based on the cluster
+    starting_relationship_strength = calculate_relationship_strength(contact_cluster)
+
+    # Pass the starting value for the chart (relationship strength) to the view
+    @starting_relationship_strength = starting_relationship_strength
+
+    # Generate the chart data (using the calculated relationship strength)
+    @chart_data = generate_chart_data(@the_contact, starting_relationship_strength)
+
+    # Prepare relationship strength over events (you had this part after the `end` keyword inappropriately)
+    @chart_data_event = []
     last_event_date = nil
-    relationship_strength = 0
+    relationship_strength = starting_relationship_strength
 
     Event.all.order(:event_date).each do |event|
-      # Calculate depreciation over time
       if last_event_date
         month_gap = ((event.event_date.year - last_event_date.year) * 12 + event.event_date.month - last_event_date.month)
         if month_gap > 6
@@ -29,7 +50,6 @@ class ContactsController < ApplicationController
         end
       end
 
-      # Adjust relationship_strength based on event intention
       case event.intention
       when "Request"
         relationship_strength -= 1
@@ -39,17 +59,81 @@ class ContactsController < ApplicationController
         relationship_strength += 3
       end
 
-      # Store the event data for the chart, including the relationship_strength
-      @chart_data << {
+      @chart_data_event << {
+        date: event.event_date.strftime("%Y-%m-%d"),
+        value: relationship_strength,  
+        id: event.id
+      }
+
+      last_event_date = event.event_date 
+    end
+  end
+
+  def calculate_relationship_strength(cluster)
+    case cluster
+    when 0
+      2  # Example value for cluster 0
+    when 1
+      4  # Example value for cluster 1
+    when 2
+      6  # Example value for cluster 2
+    else
+      0  # Default fallback
+    end
+  end
+
+  def contact_embeddings(contact)
+    text = contact.how_met
+    response = client.embeddings(
+      parameters: {
+        model: 'text-embedding-ada-002',
+        input: text
+      } 
+    )
+
+    response['data'].first['embedding']
+  end
+
+  # Helper method to generate the embedding for any text
+  def get_embeddings_for_text(text)
+    client = OpenAI::Client.new(api_key: ENV['OPENAI_API_KEY'])
+    response = client.embeddings(
+      parameters: {
+        model: 'text-embedding-3-small',
+        input: text
+      }
+    )
+    response['data'].first['embedding']
+  end
+
+  # Generate the chart data, using the starting relationship strength
+  def generate_chart_data(contact, starting_strength)
+    data_points = []
+    last_event_date = nil
+    relationship_strength = starting_strength
+
+    contact.events.order(:event_date).each do |event|
+      case event.intention
+      when "request"
+        relationship_strength -= 1
+      when "keeping in touch"
+        relationship_strength += 5
+      else
+        relationship_strength += 3
+      end
+
+      data_points << {
         date: event.event_date.strftime("%Y-%m-%d"),
         value: relationship_strength,  # Use relationship_strength as the value
         id: event.id
       }
 
-      last_event_date = event.event_date  # Update the last_event_date for next iteration
+      last_event_date = event.event_date 
     end
+
+    data_points
   end
-  # Create a new contact
+
   def create
     the_contact = Contact.new(
       first_name: params.fetch("query_first_name"),
@@ -74,7 +158,6 @@ class ContactsController < ApplicationController
     end
   end
 
-  # Update an existing contact
   def update
     the_id = params.fetch("path_id")
     the_contact = Contact.where(id: the_id, user_id: current_user.id).first
