@@ -1,5 +1,5 @@
 require 'kmeans-clusterer'
-
+require 'faraday'
 class ContactsController < ApplicationController
   def index
     @list_of_contacts = Contact.where(user_id: current_user.id).order(created_at: :desc)
@@ -15,32 +15,33 @@ class ContactsController < ApplicationController
       return
     end
 
-    embedding = get_embeddings_for_text(@the_contact.how_met)
+    # embedding = get_embeddings_for_text(@the_contact.how_met)
 
-    # Collect embeddings for all contacts
-    all_embeddings = Contact.where(user_id: current_user.id).pluck(:how_met).map do |how_met|
-      get_embeddings_for_text(how_met)
-    end
+    # # Collect embeddings for all contacts
+    # all_embeddings = Contact.where(user_id: current_user.id).pluck(:how_met).map do |how_met|
+    #   get_embeddings_for_text(how_met)
+    # end
 
-    # Perform K-Means clustering on all embeddings
-    kmeans = KMeansClusterer.run(3, all_embeddings, runs: 100, random_seed: 42) # 3 clusters as an example
+    # # Perform K-Means clustering on all embeddings
+    # kmeans = KMeansClusterer.run(3, all_embeddings, runs: 100, random_seed: 42) # 3 clusters as an example
 
-    # Find the closest centroid for this contact's embedding
-    contact_cluster = kmeans.closest_centroid(embedding)
+    # # Find the closest centroid for this contact's embedding
+    # contact_cluster = kmeans.closest_centroid(embedding)
 
-    # Calculate the starting relationship strength based on the cluster
-    starting_relationship_strength = calculate_relationship_strength(contact_cluster)
+    # # Calculate the starting relationship strength based on the cluster
+    # starting_relationship_strength = calculate_relationship_strength(contact_cluster)
 
-    # Pass the starting value for the chart (relationship strength) to the view
-    @starting_relationship_strength = starting_relationship_strength
+    # # Pass the starting value for the chart (relationship strength) to the view
+    # @starting_relationship_strength = starting_relationship_strength
 
     # Generate the chart data (using the calculated relationship strength)
-    @chart_data = generate_chart_data(@the_contact, starting_relationship_strength)
+    relationship_strength = 0
+    @chart_data = generate_chart_data(@the_contact, relationship_strength)
 
     # Prepare relationship strength over events (you had this part after the `end` keyword inappropriately)
     @chart_data_event = []
     last_event_date = nil
-    relationship_strength = starting_relationship_strength
+  
 
     Event.all.order(:event_date).each do |event|
       if last_event_date
@@ -69,48 +70,48 @@ class ContactsController < ApplicationController
     end
   end
 
-  def calculate_relationship_strength(cluster)
-    case cluster
-    when 0
-      2  # Example value for cluster 0
-    when 1
-      4  # Example value for cluster 1
-    when 2
-      6  # Example value for cluster 2
-    else
-      0  # Default fallback
-    end
-  end
+  # def calculate_relationship_strength(cluster)
+  #   case cluster
+  #   when 0
+  #     2  # Example value for cluster 0
+  #   when 1
+  #     4  # Example value for cluster 1
+  #   when 2
+  #     6  # Example value for cluster 2
+  #   else
+  #     0  # Default fallback
+  #   end
+  # end
 
-  def contact_embeddings(contact)
-    text = contact.how_met
-    response = client.embeddings(
-      parameters: {
-        model: 'text-embedding-ada-002',
-        input: text
-      } 
-    )
+  # def contact_embeddings(contact)
+  #   text = contact.how_met
+  #   response = client.embeddings(
+  #     parameters: {
+  #       model: 'text-embedding-3-small',
+  #       input: text
+  #     } 
+  #   )
 
-    response['data'].first['embedding']
-  end
+  #   response['data'].first['embedding']
+  # end
 
-  # Helper method to generate the embedding for any text
-  def get_embeddings_for_text(text)
-    client = OpenAI::Client.new(api_key: ENV['OPENAI_API_KEY'])
-    response = client.embeddings(
-      parameters: {
-        model: 'text-embedding-3-small',
-        input: text
-      }
-    )
-    response['data'].first['embedding']
-  end
+  # # Helper method to generate the embedding for any text
+  # def get_embeddings_for_text(text)
+  #   client = OpenAI::Client.new(api_key: ENV['OPENAI_API_KEY'])
+  #   response = client.embeddings(
+  #     parameters: {
+  #       model: 'text-embedding-3-small',
+  #       input: text
+  #     }
+  #   )
+  #   response['data'].first['embedding']
+  # end
 
-  # Generate the chart data, using the starting relationship strength
-  def generate_chart_data(contact, starting_strength)
+  # # Generate the chart data, using the starting relationship strength
+  def generate_chart_data(contact, relationship_strength)
     data_points = []
     last_event_date = nil
-    relationship_strength = starting_strength
+    relationship_strength = 0
 
     contact.events.order(:event_date).each do |event|
       case event.intention

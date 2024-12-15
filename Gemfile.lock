@@ -468,6 +468,7 @@ DEPENDENCIES
   draft_generators
   draft_matchers
   faker
+  faraday
   grade_runner
   htmlbeautifier
   http
