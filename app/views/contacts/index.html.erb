@@ -1,8 +1,18 @@
+<style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+  }
+  tr:nth-child(even) {
+    background-color: rgba(193, 176, 159, 0.25);
+  }
+</style>
+
 <div>
   <div>
     <h1>
       List of all contacts
-      <h2>Current User: <%= current_user.id %></h2>
 
     </h1>
   </div>
@@ -128,10 +138,17 @@
 <hr>
 <div>
   <div>
-    <table border="1">
+    <table>
       <tr>
         <th>
           ID
+        </th>
+
+        <th>
+          First Name
+        </th>
+        <th>
+          Last Name
         </th>
 
         <th>
@@ -196,10 +213,19 @@
 
       <% @list_of_contacts.each do |a_contact| %>
       <tr>
-        <td>
+
+      <td>
           <%= a_contact.id %>
         </td>
 
+        <td>
+          <%= a_contact.first_name %>
+        </td>
+
+        <td>
+          <%= a_contact.last_name %>
+        </td>
+        
         <td>
           <%= a_contact.date_first_met %>
         </td>
