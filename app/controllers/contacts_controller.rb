@@ -15,37 +15,38 @@ class ContactsController < ApplicationController
       return
     end
   
-
-    events = @the_contact.events.order(:event_date)
-    relationship_strength = 0
-    data_points = []
+    # In your controller:
+    @chart_data = []
     last_event_date = nil
+    relationship_strength = 0
 
-    events.each do |event|
-month_gap = last_event_date ? ((event.event_date.year - last_event_date.year) * 12 + event.event_date.month - last_event_date.month) : 0
-if month_gap > 6
-  relationship_strength -= ((month_gap - 6)/2)
-end
+    Event.all.order(:event_date).each do |event|
+      # Calculate depreciation over time
+      if last_event_date
+        month_gap = ((event.event_date.year - last_event_date.year) * 12 + event.event_date.month - last_event_date.month)
+        if month_gap > 6
+          relationship_strength -= (month_gap / 6)
+        end
+      end
 
+      # Adjust relationship_strength based on event intention
       case event.intention
-      when "request"
+      when "Request"
         relationship_strength -= 1
-      when "keeping in touch"
+      when "Keeping in touch"
         relationship_strength += 5
       else
         relationship_strength += 3
       end
 
-      data_points << { date: event.event_date.strftime("%Y-%m-%d"), value: relationship_strength }
-      last_event_date = event.event_date
-    end
-
-    @chart_data = Event.all.order(:event_date).map do |event|
-      {
-        date: event.event_date,
-        value: relationship_strength, # Replace this with the appropriate attribute
-        id: event.id # Use `id` since that's the column name
+      # Store the event data for the chart, including the relationship_strength
+      @chart_data << {
+        date: event.event_date.strftime("%Y-%m-%d"),
+        value: relationship_strength,  # Use relationship_strength as the value
+        id: event.id
       }
+
+      last_event_date = event.event_date  # Update the last_event_date for next iteration
     end
   end
   # Create a new contact
@@ -116,5 +117,5 @@ end
 
     the_contact.destroy
     redirect_to("/contacts", notice: "Contact deleted successfully.")
-    end
+  end
 end
