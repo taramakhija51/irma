@@ -107,7 +107,7 @@ class ContactsController < ApplicationController
   #   response['data'].first['embedding']
   # end
 
-  # # Generate the chart data, using the starting relationship strength
+
   def generate_chart_data(contact, relationship_strength)
     data_points = []
     last_event_date = nil
@@ -125,7 +125,7 @@ class ContactsController < ApplicationController
 
       data_points << {
         date: event.event_date.strftime("%Y-%m-%d"),
-        value: relationship_strength,  # Use relationship_strength as the value
+        value: relationship_strength, 
         id: event.id
       }
 
@@ -189,7 +189,7 @@ class ContactsController < ApplicationController
     end
   end
 
-  # Delete a contact
+
   def destroy
     the_id = params.fetch("path_id")
     the_contact = Contact.where(id: the_id, user_id: current_user.id).first
