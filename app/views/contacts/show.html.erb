@@ -1,9 +1,5 @@
 <div>
   <div>
-    <h1>
-      Contact #<%= @the_contact.id %> details
-
-    </h1>
 
 <h1>Contact Details: <%= @the_contact.first_name %></h1>
 
@@ -27,7 +23,11 @@
         labels: labels,
         datasets: [{
           label: 'Relationship Strength',
-          data: data,
+          data: chartData.map((point) => ({
+            x: point.date,
+            y: point.value,
+            eventId: point.id // Attach the event ID to each data point
+          })),
           borderColor: 'rgba(193, 176, 159)',
           backgroundColor: 'rgba(193, 176, 159, 0.25)',
           borderWidth: 2,
@@ -36,6 +36,10 @@
       },
       options: {
         responsive: true,
+        parsing: {
+          xAxisKey: 'x', // Map to the `x` property in your data points
+          yAxisKey: 'y'  // Map to the `y` property in your data points
+        },
         scales: {
           x: {
             type: 'time',
@@ -54,7 +58,24 @@
             },
             beginAtZero: true
           }
-        }
+        },
+        onClick: (event, elements) => {
+          if (elements.length > 0) {
+            const chartElement = elements[0]; // First clicked element
+            const datasetIndex = chartElement.datasetIndex; // Dataset index
+            const dataIndex = chartElement.index; // Data index
+
+            // Retrieve eventId from the dataset
+            const eventId = relationshipChart.data.datasets[datasetIndex].data[dataIndex].eventId;
+
+            // Redirect to the corresponding event page
+            if (eventId) {
+              window.location.href = `/events/${eventId}`;
+            } else {
+              console.error("Event ID not found for this data point.");
+            }
+          }
+        }  
       }
     });
   });

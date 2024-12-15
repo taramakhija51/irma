@@ -37,7 +37,7 @@
 
 <%user_content = params.fetch("user_content", "")%>
 
-<%= client = OpenAI::Client.new(api_key: ENV.fetch("OPENAI_API_KEY"))
+<%client = OpenAI::Client.new(api_key: ENV.fetch("OPENAI_API_KEY"))
  %>
 <% 
 
@@ -87,9 +87,12 @@ api_response = client.chat(
       <dd><%= @the_event.event_location %></dd>
 
       <dt>Contact(s)</dt>
-      <dd>
-        <%= @the_event.contacts.map { |contact| "#{contact.first_name} #{contact.last_name}" }.join(", ") %>
-      </dd>
+ <dd>
+  <%= @the_event.contacts.map do |contact| 
+        link_to("#{contact.first_name} #{contact.last_name}", "/contacts/#{contact.id}")
+     end.join(", ").html_safe %>
+</dd>
+
 
       <dt>User</dt>
       <dd><%= @the_event.user_id %></dd>

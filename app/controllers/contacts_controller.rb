@@ -14,6 +14,7 @@ class ContactsController < ApplicationController
       redirect_to("/contacts", alert: "Contact not found or you don't have permission to view this contact.")
       return
     end
+  
 
     events = @the_contact.events.order(:event_date)
     relationship_strength = 0
@@ -21,25 +22,32 @@ class ContactsController < ApplicationController
     last_event_date = nil
 
     events.each do |event|
-      year_gap = last_event_date ? event.event_date.year - last_event_date.year : 0
-      relationship_strength -= year_gap if year_gap > 0
+month_gap = last_event_date ? ((event.event_date.year - last_event_date.year) * 12 + event.event_date.month - last_event_date.month) : 0
+if month_gap > 6
+  relationship_strength -= ((month_gap - 6)/2)
+end
 
       case event.intention
       when "request"
         relationship_strength -= 1
       when "keeping in touch"
-        relationship_strength += 2
+        relationship_strength += 5
       else
-        relationship_strength += 1
+        relationship_strength += 3
       end
 
       data_points << { date: event.event_date.strftime("%Y-%m-%d"), value: relationship_strength }
       last_event_date = event.event_date
     end
 
-    @chart_data = data_points
+    @chart_data = Event.all.order(:event_date).map do |event|
+      {
+        date: event.event_date,
+        value: relationship_strength, # Replace this with the appropriate attribute
+        id: event.id # Use `id` since that's the column name
+      }
+    end
   end
-
   # Create a new contact
   def create
     the_contact = Contact.new(
@@ -108,5 +116,5 @@ class ContactsController < ApplicationController
 
     the_contact.destroy
     redirect_to("/contacts", notice: "Contact deleted successfully.")
-  end
+    end
 end
