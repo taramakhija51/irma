@@ -88,7 +88,6 @@ gem "table_print"
 gem "simple_form"
 gem "carrierwave"
 gem 'openai'
-gem 'ruby-openai'
 gem 'faraday'
 
 group :development do
