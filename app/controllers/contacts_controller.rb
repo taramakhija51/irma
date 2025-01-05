@@ -9,30 +9,59 @@ class ContactsController < ApplicationController
   def show
     the_id = params.fetch("path_id")
     @the_contact = Contact.find_by(id: the_id, user_id: current_user.id)
-
+  
     if @the_contact.nil?
       redirect_to("/contacts", alert: "Contact not found or you don't have permission to view this contact.")
       return
     end
+  
+    # Step 1: Pluck and filter the "How Met" column
+    contacts = Contact.where(user_id: current_user.id).pluck(:how_met).map(&:strip).reject(&:blank?)
+  
+    if contacts.empty?
+      raise "No valid text data in 'How Met' column for embeddings."
+    end
+  
+    # Log the raw data for debugging
+    Rails.logger.debug("Contacts 'How Met' data: #{contacts.inspect}")
+  
 
-    # embedding = get_embeddings_for_text(@the_contact.how_met)
+   # Step 2: Generate embeddings
+   all_embeddings = contacts.map do |text|
+    begin
+      embedding = get_embeddings_for_text(text)
+      Rails.logger.debug("Text: #{text}, Embedding: #{embedding.inspect}")
+      embedding
+    rescue => e
+      Rails.logger.error("Failed to generate embedding for text '#{text}': #{e.message}")
+      nil
+    end
+  end.compact
 
-    # # Collect embeddings for all contacts
-    # all_embeddings = Contact.where(user_id: current_user.id).pluck(:how_met).map do |how_met|
-    #   get_embeddings_for_text(how_met)
-    # end
+  if all_embeddings.empty?
+    raise "No valid embeddings generated from 'How Met' data."
+  end
 
-    # # Perform K-Means clustering on all embeddings
-    # kmeans = KMeansClusterer.run(3, all_embeddings, runs: 100, random_seed: 42) # 3 clusters as an example
+  # Log embeddings for inspection
+  Rails.logger.debug("Generated embeddings: #{all_embeddings.inspect}")
 
-    # # Find the closest centroid for this contact's embedding
-    # contact_cluster = kmeans.closest_centroid(embedding)
+  
+# Perform K-Means clustering
+  # Step 4: Perform clustering
+  kmeans = KMeansClusterer.run(3, all_embeddings, runs: 100, random_seed: 42)
 
-    # # Calculate the starting relationship strength based on the cluster
-    # starting_relationship_strength = calculate_relationship_strength(contact_cluster)
+  # Log cluster centroids for debugging
+  Rails.logger.debug("Cluster centroids: #{kmeans.centroids.inspect}")
 
-    # # Pass the starting value for the chart (relationship strength) to the view
-    # @starting_relationship_strength = starting_relationship_strength
+  # Find the embedding for the current contact
+  contact_embedding = get_embeddings_for_text(@the_contact.how_met)
+
+  # Assign the current contact to a cluster
+  contact_cluster = kmeans.closest_centroid(contact_embedding)
+
+  # Step 5: Calculate starting relationship strength based on the cluster
+  @starting_relationship_strength = calculate_relationship_strength(contact_cluster)
+
 
     # Generate the chart data (using the calculated relationship strength)
     relationship_strength = 0
@@ -70,42 +99,57 @@ class ContactsController < ApplicationController
     end
   end
 
-  # def calculate_relationship_strength(cluster)
-  #   case cluster
-  #   when 0
-  #     2  # Example value for cluster 0
-  #   when 1
-  #     4  # Example value for cluster 1
-  #   when 2
-  #     6  # Example value for cluster 2
-  #   else
-  #     0  # Default fallback
-  #   end
-  # end
+   def calculate_relationship_strength(cluster)
+     case cluster
+     when 0
+       2  # Example value for cluster 0
+     when 1
+       4  # Example value for cluster 1
+     when 2
+       6  # Example value for cluster 2
+     else
+       0  # Default fallback
+     end
+   end
 
-  # def contact_embeddings(contact)
-  #   text = contact.how_met
-  #   response = client.embeddings(
-  #     parameters: {
-  #       model: 'text-embedding-3-small',
-  #       input: text
-  #     } 
-  #   )
+   def contact_embeddings(contact)
+     text = contact.how_met
+     response = client.embeddings(
+       parameters: {
+         model: 'text-embedding-3-small',
+         input: text
+       } 
+     )
 
-  #   response['data'].first['embedding']
-  # end
+     response['data'].first['embedding']
+   end
 
   # # Helper method to generate the embedding for any text
-  # def get_embeddings_for_text(text)
-  #   client = OpenAI::Client.new(api_key: ENV['OPENAI_API_KEY'])
-  #   response = client.embeddings(
-  #     parameters: {
-  #       model: 'text-embedding-3-small',
-  #       input: text
-  #     }
-  #   )
-  #   response['data'].first['embedding']
-  # end
+  def get_embeddings_for_text(text)
+    raise "Text is blank!" if text.blank?
+  
+    client = OpenAI::Client.new(api_key: ENV['OPENAI_API_KEY'])
+    
+    response = client.embeddings(
+      parameters: {
+        model: 'text-embedding-ada-002',
+        input: text
+      }
+    )
+  
+    embedding = response.dig('data', 0, 'embedding')
+  
+    if embedding.nil? || !embedding.is_a?(Array)
+      Rails.logger.error("Invalid embedding for text '#{text}': #{response.inspect}")
+      raise "Failed to generate embedding."
+    end
+  
+    embedding
+  rescue => e
+    Rails.logger.error("Error fetching embedding for text '#{text}': #{e.message}")
+    []
+  end
+  
 
 
   def generate_chart_data(contact, relationship_strength)
