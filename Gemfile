@@ -89,6 +89,7 @@ gem "simple_form"
 gem "carrierwave"
 gem 'openai'
 gem 'faraday'
+gem "mailgun-ruby"
 
 group :development do
   gem "annotate"
