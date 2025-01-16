@@ -1,19 +1,37 @@
 require 'kmeans-clusterer'
 require 'faraday'
 class ContactsController < ApplicationController
+  before_action :authenticate_user!
   def index
     @list_of_contacts = Contact.where(user_id: current_user.id).order(created_at: :desc)
     render({ template: "contacts/index" })
   end
 
   def show
-    the_id = params.fetch("path_id")
-    @the_contact = Contact.find_by(id: the_id, user_id: current_user.id)
+    if current_user
+      the_id = params.fetch("path_id", nil) # Fetch the path_id, handle missing param gracefully
+      if the_id
+        @the_contact = Contact.find_by(id: the_id, user_id: current_user.id)
   
-    if @the_contact.nil?
-      redirect_to("/contacts", alert: "Contact not found or you don't have permission to view this contact.")
-      return
+        if @the_contact
+          # Contact exists, and user has access
+          # Proceed with rendering or processing the contact details
+          Rails.logger.info "Contact found: #{@the_contact.inspect}"
+        else
+          # Contact not found or user doesn't have access
+          redirect_to("/contacts", alert: "Contact not found or you don't have permission to view this contact.")
+        end
+      else
+        # Path ID is missing
+        redirect_to("/contacts", alert: "Invalid contact ID.")
+      end
+    else
+      # User not logged in
+      Rails.logger.info "User not logged in"
+      redirect_to new_user_session_path
     end
+  end
+  
   
     # Step 1: Pluck and filter the "How Met" column
     contacts = Contact.where(user_id: current_user.id).pluck(:how_met).map(&:strip).reject(&:blank?)
