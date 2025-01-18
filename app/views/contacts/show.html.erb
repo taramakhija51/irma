@@ -1,3 +1,4 @@
+
 <div>
   <div>
 
@@ -337,10 +338,10 @@
 
 <h1>Send a Thank You Email</h1>
 
-<%= form_with url: send_email_contact_path(@contact.id), method: :post, local: true do |f| %>
+<%= form_with url: send_email_contact_path(@the_contact.id), method: :post, local: true do |f| %>
   <div>
     <label>To:</label>
-    <%= text_field_tag :recipient_email, @contact.email, readonly: true %>
+    <%= text_field_tag :recipient_email, @the_contact.email, readonly: true %>
   </div>
   
   <div>

@@ -1,5 +1,6 @@
 require 'kmeans-clusterer'
 require 'faraday'
+require 'shellwords'
 
 class ContactsController < ApplicationController
   before_action :authenticate_user!
@@ -100,20 +101,23 @@ class ContactsController < ApplicationController
 
   def send_email
     @the_contact = Contact.find(params[:id])
-    recipient_email = @contact.email
-    subject = params[:subject]
-    body = params[:body]
-
-    # Call the Nodemailer script
-    command = "node nodemailer_service/mailer.js '#{recipient_email}' '#{subject}' '#{body}'"
+    recipient_email = params[:recipient_email].presence || "default@example.com"
+    subject = params[:subject].presence || "No Subject"
+    body = params[:body].presence || "No Body"
+  
+    # Escape parameters
+    command = "node nodemailer_service/mailer.js #{Shellwords.escape(recipient_email)} #{Shellwords.escape(subject)} #{Shellwords.escape(body)}"
+    Rails.logger.info("Command to execute: #{command}")
+  
     stdout, stderr, status = Open3.capture3(command)
-
+  
     if status.success?
       flash[:notice] = "Email sent successfully!"
     else
+      Rails.logger.error("Error sending email: #{stderr}")
       flash[:alert] = "Error sending email: #{stderr}"
     end
-
+  
     redirect_to contact_path(@the_contact)
   end
 
