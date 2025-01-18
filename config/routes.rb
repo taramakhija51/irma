@@ -21,7 +21,10 @@ Rails.application.routes.draw do
   post("/modify_contact/:path_id", { :controller => "contacts", :action => "update" })
   get("/delete_contact/:path_id", { :controller => "contacts", :action => "destroy" })
 
-
+  resources :contacts do
+    post :send_email, on: :member
+  end
+  
 
   
 end
