@@ -1,7 +1,9 @@
 require 'kmeans-clusterer'
 require 'faraday'
+
 class ContactsController < ApplicationController
   before_action :authenticate_user!
+
   def index
     @list_of_contacts = Contact.where(user_id: current_user.id).order(created_at: :desc)
     render({ template: "contacts/index" })
@@ -14,182 +16,24 @@ class ContactsController < ApplicationController
         @the_contact = Contact.find_by(id: the_id, user_id: current_user.id)
   
         if @the_contact
-          # Contact exists, and user has access
-          # Proceed with rendering or processing the contact details
           Rails.logger.info "Contact found: #{@the_contact.inspect}"
         else
-          # Contact not found or user doesn't have access
           redirect_to("/contacts", alert: "Contact not found or you don't have permission to view this contact.")
         end
       else
-        # Path ID is missing
         redirect_to("/contacts", alert: "Invalid contact ID.")
       end
     else
-      # User not logged in
       Rails.logger.info "User not logged in"
       redirect_to new_user_session_path
     end
-  end
-  
-  
-    # Step 1: Pluck and filter the "How Met" column
-    contacts = Contact.where(user_id: current_user.id).pluck(:how_met).map(&:strip).reject(&:blank?)
-  
-    if contacts.empty?
-      raise "No valid text data in 'How Met' column for embeddings."
-    end
-  
-    # Log the raw data for debugging
-    Rails.logger.debug("Contacts 'How Met' data: #{contacts.inspect}")
-  
-
-    # Step 2: Generate embeddings
-    all_embeddings = contacts.map do |text|
-      begin
-        embedding = get_embeddings_for_text(text)
-        Rails.logger.debug("Text: #{text}, Embedding: #{embedding.inspect}")
-        embedding
-      rescue => e
-        Rails.logger.error("Failed to generate embedding for text '#{text}': #{e.message}")
-        nil
-      end
-    end.compact
-
-    if all_embeddings.empty?
-      raise "No valid embeddings generated from 'How Met' data."
-    end
-
-    # Log embeddings for inspection
-    Rails.logger.debug("Generated embeddings: #{all_embeddings.inspect}")
-
-    # Perform K-Means clustering
-    # Step 4: Perform clustering
-    kmeans = KMeansClusterer.run(3, all_embeddings, runs: 100, random_seed: 42)
-
-    # Log cluster centroids for debugging
-    Rails.logger.debug("Cluster centroids: #{kmeans.centroids.inspect}")
-
-    # Find the embedding for the current contact
-    contact_embedding = get_embeddings_for_text(@the_contact.how_met)
-
-    # Assign the current contact to a cluster
-    contact_cluster = kmeans.closest_centroid(contact_embedding)
-
-    # Step 5: Calculate starting relationship strength based on the cluster
-    @starting_relationship_strength = calculate_relationship_strength(contact_cluster)
-
-
-    # Generate the chart data (using the calculated relationship strength)
-    relationship_strength = 0
-    @chart_data = generate_chart_data(@the_contact, relationship_strength)
-
-    # Prepare relationship strength over events (you had this part after the `end` keyword inappropriately)
-    @chart_data_event = []
-    last_event_date = nil
-  
-
-    Event.all.order(:event_date).each do |event|
-      if last_event_date
-        month_gap = ((event.event_date.year - last_event_date.year) * 12 + event.event_date.month - last_event_date.month)
-        if month_gap > 6
-          relationship_strength -= (month_gap / 6)
-        end
-      end
-
-      case event.intention
-      when "Request"
-        relationship_strength -= 1
-      when "Keeping in touch"
-        relationship_strength += 5
-      else
-        relationship_strength += 3
-      end
-
-      @chart_data_event << {
-        date: event.event_date.strftime("%Y-%m-%d"),
-        value: relationship_strength,  
-        id: event.id
-      }
-
-      last_event_date = event.event_date 
-    end
-  end
-
-  def calculate_relationship_strength(cluster)
-    case cluster
-    when 0
-      2  # Example value for cluster 0
-    when 1
-      4  # Example value for cluster 1
-    when 2
-      6  # Example value for cluster 2
-    else
-      0  # Default fallback
-    end
-  end
-
-  # Helper method to generate the embedding for any text
-  def get_embeddings_for_text(text)
-    return [] if text.blank? || text.size > 100000
-    client = OpenAI::Client.new(api_key: ENV['OPENAI_API_KEY'])
-    
-    Rails.logger.debug("Fetching embedding for text: #{text}")
-    
-    response = client.embeddings(
-      parameters: {
-        model: 'text-embedding-ada-002', # or 'text-embedding-3-large'
-        input: text
-      }
-    )
-    
-    # Log the response for debugging
-    Rails.logger.debug("API Response: #{response.inspect}")
-    
-    embedding = response['data'].first['embedding']
-    raise "Empty embedding" if embedding.nil? || embedding.empty?
-  
-    embedding
-  rescue OpenAI::ClientError => e
-    Rails.logger.error("Error fetching embedding for text '#{text}': #{e.message}")
-    # You can return an empty array or a default value here
-    []
-  rescue => e
-    Rails.logger.error("Unexpected error fetching embedding for text '#{text}': #{e.message}")
-    []
-  end
-
-  def generate_chart_data(contact, relationship_strength)
-    data_points = []
-    last_event_date = nil
-    relationship_strength = 0
-
-    contact.events.order(:event_date).each do |event|
-      case event.intention
-      when "request"
-        relationship_strength -= 1
-      when "keeping in touch"
-        relationship_strength += 5
-      else
-        relationship_strength += 3
-      end
-
-      data_points << {
-        date: event.event_date.strftime("%Y-%m-%d"),
-        value: relationship_strength, 
-        id: event.id
-      }
-
-      last_event_date = event.event_date 
-    end
-
-    data_points
   end
 
   def create
     the_contact = Contact.new(
       first_name: params.fetch("query_first_name"),
       last_name: params.fetch("query_last_name"),
+      email: params.fetch("query_email"),
       date_first_met: params.fetch("query_date_first_met"),
       current_employer: params.fetch("query_current_employer"),
       partner: params.fetch("query_partner"),
@@ -222,6 +66,7 @@ class ContactsController < ApplicationController
     if the_contact.update(
       first_name: params[:first_name],
       last_name: params[:last_name],
+      email: params[:email],
       date_first_met: params[:date_first_met],
       current_employer: params[:current_employer],
       partner: params[:partner],
@@ -240,7 +85,6 @@ class ContactsController < ApplicationController
     end
   end
 
-
   def destroy
     the_id = params.fetch("path_id")
     the_contact = Contact.where(id: the_id, user_id: current_user.id).first
@@ -252,5 +96,55 @@ class ContactsController < ApplicationController
 
     the_contact.destroy
     redirect_to("/contacts", notice: "Contact deleted successfully.")
+  end
+
+  def send_email
+    @the_contact = Contact.find(params[:id])
+    recipient_email = @contact.email
+    subject = params[:subject]
+    body = params[:body]
+
+    # Call the Nodemailer script
+    command = "node nodemailer_service/mailer.js '#{recipient_email}' '#{subject}' '#{body}'"
+    stdout, stderr, status = Open3.capture3(command)
+
+    if status.success?
+      flash[:notice] = "Email sent successfully!"
+    else
+      flash[:alert] = "Error sending email: #{stderr}"
+    end
+
+    redirect_to contact_path(@the_contact)
+  end
+
+  def calculate_relationship_strength(cluster)
+    case cluster
+    when 0
+      2
+    when 1
+      4
+    when 2
+      6
+    else
+      0
+    end
+  end
+
+  def get_embeddings_for_text(text)
+    return [] if text.blank? || text.size > 100000
+
+    client = OpenAI::Client.new(api_key: ENV['OPENAI_API_KEY'])
+    response = client.embeddings(
+      parameters: {
+        model: 'text-embedding-ada-002',
+        input: text
+      }
+    )
+    embedding = response['data'].first['embedding']
+    raise "Empty embedding" if embedding.nil? || embedding.empty?
+    embedding
+  rescue OpenAI::ClientError => e
+    Rails.logger.error("Error fetching embedding: #{e.message}")
+    []
   end
 end

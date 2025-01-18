@@ -1,37 +1,33 @@
-// mailer.js
 const nodemailer = require('nodemailer');
+
+// Retrieve arguments from the command line
+const recipientEmail = process.argv[2];
+const emailSubject = process.argv[3];
+const emailBody = process.argv[4];
 
 // Set up the transporter
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com", // Change this to match the email provider
+  host: "smtp.gmail.com",
   port: 587,
-  secure: false, // Use true for 465, false for other ports
+  secure: false, // true for port 465, false for 587
   auth: {
-    user: process.env.SMTP_USER, // Email login credentials from environment variables
-    pass: process.env.SMTP_PASSWORD
+    user: process.env.SMTP_USER, // Your email
+    pass: process.env.SMTP_PASSWORD // Your password or App Password
   }
 });
 
-// Function to send email
-async function sendEmail(to, subject, text) {
-  try {
-    const info = await transporter.sendMail({
-      from: process.env.SMTP_USER, // Sender address
-      to: to, // Receiver address
-      subject: subject, // Subject line
-      text: text // Plain text body
-    });
-
-    console.log("Message sent: %s", info.messageId);
-    return { success: true, messageId: info.messageId };
-  } catch (error) {
+// Send the email
+transporter.sendMail({
+  from: process.env.SMTP_USER, // Sender address
+  to: recipientEmail, // Recipient address
+  subject: emailSubject, // Subject line
+  text: emailBody // Plain text body
+}, (error, info) => {
+  if (error) {
     console.error("Error sending email:", error);
-    return { success: false, error: error.message };
+    process.exit(1);
+  } else {
+    console.log("Email sent successfully:", info.messageId);
+    process.exit(0);
   }
-}
-
-// Expose the sendEmail function to other scripts
-module.exports = sendEmail;
-
-// To test the script locally, uncomment below lines and set up the environment variables:
-sendEmail('tmakhija0@gmail.com', 'Test Subject', 'Test Message');
+});

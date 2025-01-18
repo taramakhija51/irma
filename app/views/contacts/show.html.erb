@@ -109,6 +109,15 @@
       <dd>
         <%= @the_contact.last_name %>
       </dd>
+
+      <dt>
+        Email
+      </dt>
+      <dd>
+        <%= @the_contact.email %>
+      </dd>
+      </dt>
+
       <dt>
         Date first met
       </dt>
@@ -221,6 +230,13 @@
 
     <form action="/modify_contact/<%= @the_contact.id %>"  method="post" >
       <div>
+        <label for="email">
+          Email
+        </label>
+
+        <input type="string" id="email" name="query_email" value="<%= @the_contact.email %>">
+      </div>
+      <div>
         <label for="date_first_met_box">
           Date first met
         </label>
@@ -318,5 +334,27 @@
     </form>
   </div>
 </div>
+
+<h1>Send a Thank You Email</h1>
+
+<%= form_with url: send_email_contact_path(@contact.id), method: :post, local: true do |f| %>
+  <div>
+    <label>To:</label>
+    <%= text_field_tag :recipient_email, @contact.email, readonly: true %>
+  </div>
+  
+  <div>
+    <label>Subject:</label>
+    <%= text_field_tag :subject, "Thank You for Connecting!" %>
+  </div>
+
+  <div>
+    <label>Message:</label>
+    <%= text_area_tag :body, "It was great to meet you. Let's stay in touch!" %>
+  </div>
+
+  <%= submit_tag "Send Email" %>
+<% end %>
+
 
 <hr>

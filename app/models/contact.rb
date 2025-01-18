@@ -6,6 +6,7 @@
 #  communication_frequency  :integer
 #  current_employer         :string
 #  date_first_met           :date
+#  email                    :string
 #  embedding                :text
 #  first_name               :string
 #  how_met                  :string
