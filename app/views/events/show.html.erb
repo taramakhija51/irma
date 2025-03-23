@@ -30,6 +30,8 @@
       <input type="textarea" id="user_content" name="user_content">
     </div>
     <button type="submit">Submit to generate a thank you email</button>
+    <%= link_to "Compose Email", "mailto:user@example.com?subject=#{CGI.escape('Your Subject Here')}&body=#{CGI.escape('Your pre-filled message goes here.')}" %>
+
   </form>
 </div>
 
