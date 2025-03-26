@@ -65,22 +65,21 @@ test:
 #
 # Instead, provide the password or a full connection URL as an environment
 # variable when you boot the app. For example:
-#
 #   DATABASE_URL="postgres://myuser:mypass@localhost/somedatabase"
-#
 # If the connection URL is provided in the special DATABASE_URL environment
 # variable, Rails will automatically merge its configuration values on top of
 # the values provided in this file. Alternatively, you can specify a connection
 # URL environment variable explicitly:
-#
 #   production:
 #     url: <%= ENV["MY_APP_DATABASE_URL"] %>
-#
 # Read https://guides.rubyonrails.org/configuring.html#configuring-a-database
 # for a full overview on how database connection configuration can be specified.
-#
+
+
 production:
   <<: *default
-  database: rails_template_production
-  username: rails_template
+  adapter: postgresql
+  url: postgresql://irma_app_user:AZWL3gvco3fCRGB846VSiDC1fuHM76Y1@dpg-cvi5iibqf0us73b122b0-a.oregon-postgres.render.com/irma_app
+  database: irma_app
+  username: irma_app_user
   password: <%= ENV["RAILS_TEMPLATE_DATABASE_PASSWORD"] %>
