@@ -87,7 +87,6 @@ gem "sqlite3", "~> 1.4"
 gem "table_print"
 gem "simple_form"
 gem "carrierwave"
-gem 'openai'
 gem 'faraday'
 gem "mailgun-ruby"
 
@@ -115,3 +114,5 @@ group :test do
   gem "rspec-html-matchers"
   gem "webmock"
 end
+
+gem "ruby-openai", "~> 8.0"

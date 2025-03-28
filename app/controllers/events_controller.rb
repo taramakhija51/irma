@@ -11,15 +11,16 @@ class EventsController < ApplicationController
   end
 
   def show
-    #client = OpenAI::Client.new(access_token: ENV['OPENAI_API_KEY'])
     the_id = params.fetch("path_id")
-    user_content = params.fetch("user_content", "")
-    matching_events = Event.where({ :id => the_id })
-
-    @the_event = matching_events.at(0)
-    @all_contacts = Contact.all
-    render({ :template => "events/show" })
+    @the_event = Event.find_by(id: the_id)
+    if @the_event
+      @all_contacts = Contact.all
+    else
+      redirect_to(events_path, alert: "Event not found.")
+    end
+    render({ template: "events/show" })
   end
+  
 
  def create
   @event = Event.new(
