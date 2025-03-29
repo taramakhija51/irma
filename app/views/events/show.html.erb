@@ -1,130 +1,76 @@
-
 <div>
-  <div>
-    <h1>
-      <%= @the_event.event_type %> details
-    </h1>
-
-    <div>
-      <div>
-        <a href="/events">
-          Go back
-        </a>
-      </div>
-
-      <div>
-        <a href="/delete_event/<%= @the_event.id %>">
-          Delete event
-        </a>
-      </div>
-    </div>
-
-<div>
-  <form action="/events/<%=@the_event.id%>" method="post">
-    <div>
-      <label for="user_content">
-        Enter notes from the event here
-      </label>
-
+  <h1><%= @the_event.event_type %> details</h1>
   
-      <input type="textarea" id="user_content" name="user_content">
+  <div>
+    <div>
+      <a href="/events">Go back</a>
     </div>
-    <button type="submit">Submit to generate a thank you email</button>
-<% if @the_event.contacts.any? %>
-  <% recipient_email = @the_event.contacts.first.email %>
-  <% encoded_email_body = CGI.escape(@email.to_s) %>
 
-  <%= link_to "Compose Email", "mailto:#{recipient_email}?subject=#{CGI.escape('Thank You!')}&body=#{encoded_email_body}" %>
-<% end %>
+    <div>
+      <a href="/delete_event/<%= @the_event.id %>">Delete event</a>
+    </div>
+  </div>
+<% if params[:email_generated] %>
 
+  <div class="generated-email">
+    <h3>Generated Email:</h3>
+    <div class="email-preview">
+      <%= simple_format(@email) %>
+    </div>
+    
+    <% if @the_event.contacts.any? %>
+      <% recipient_email = @the_event.contacts.first.email %>
+      <%= link_to "Compose Email", "mailto:#{recipient_email}?subject=#{CGI.escape('Thank You!')}&body=#{CGI.escape(@email.to_s)}", class: "btn btn-primary" %>
+    <% end %>
+  </div>
+<% else %>
 
-  </form>
-</div>
-
-
-
-<%user_content = params.fetch("user_content", "")%>
-
-<%client = OpenAI::Client.new(api_key: ENV.fetch("OPENAI_API_KEY"))
- %>
-<% 
-
-message_list = [
-  {
-    "role" => "system",
-    "content" => "Draft a thank you email after networking with someone. You met with them on #{@the_event.event_date} via a format of #{@the_event.event_type}, their name is  #{@the_event.contacts.map { |contact| "#{contact.first_name} #{contact.last_name}" }.join(", ")}.The user will input some takeaways from the meeting. You want the tone to be friendly, but professional, acknowledging the user is likely not very close with the person. Emphasize WARMTH coming across. Keep it under one paragraph. Do NOT give them any fill in the blanks in the email. Try to write something generic about having learned a lot or gained a new perspective if they don't include notes. But DO NOT make it too obvious that it's generic, try to sound as thoughtful and personal as possible. Do not try to kiss up to them, and limit any words that are three syllables or longer. Avoid corporate speak -- do NOT say phrases such as 'valuable insights', 'crossing paths', etc but don't make it too informal. For an example on the level of formality -- phrases like 'I wanted to express my gratitude' are too formal and should NOT be used, opt for phrases like 'I am grateful for' instead. Meanwhile phrases like 'Looking forward to staying in touch' should NOT be used, replaced by the more formal -- 'I look forward to staying in touch' or 'I hope to stay in touch'. Try to find a happy medium between both examples in the general messaging. It should be 4-7 sentences long. Reference the date of the interaction (as inputted by the user). Don't be too repetitive, limit it to 1 exclamation mark, maximum 2 if it REALLY works.You can also send your regards or otherwise check in about their partner, their name is #{@the_event.contacts.map { |contact| contact.partner }.join(", ")} If it is helpful, you can find additional notes on the person here: #{@the_event.contacts.map { |contact| contact.how_met }.join(", ")} ; #{@the_event.contacts.map { |contact| contact.notes }.join(", ")}. The user can also enter additional content on that particular interaction (which you should prioritize incorporating in your response) here: #{user_content}.
-
- "
-  },
-  {
-    "role" => "user",
-    "content" => user_content
-  }
-]
-
-client = OpenAI::Client.new(:access_token => ENV.fetch("OPENAI_API_KEY"))
-api_response = client.chat(
-  parameters: {
-    model: "gpt-3.5-turbo",
-    messages: message_list
-  }
-)
-%>
-<% @email = api_response.dig("choices", 0, "message", "content") %>
-
-<% if params[:user_content].present?%>
-  <h2>Generated Email</h2>
-    <p><%= @email %></p>
+  <div>
+    <form action="/events/<%= @the_event.id %>" method="post">
+      <%= csrf_meta_tags %>
+      <div>
+        <label for="user_content">Enter notes from the event here</label>
+        <textarea id="user_content" name="user_content"></textarea>
+      </div>
+      <button type="submit">Submit to generate a thank you email</button>
+    </form>
   </div>
 <% end %>
 
+  <dl>
+    <dt>Event type</dt>
+    <dd><%= @the_event.event_type %></dd>
 
+    <dt>Event date</dt>
+    <dd><%= @the_event.event_date %></dd>
 
+    <dt>Event location</dt>
+    <dd><%= @the_event.event_location %></dd>
 
+    <dt>Contact(s)</dt>
+    <dd>
+      <%= @the_event.contacts.map { |contact| link_to("#{contact.first_name} #{contact.last_name}", "/contacts/#{contact.id}") }.join(", ").html_safe %>
+    </dd>
 
+    <dt>User</dt>
+    <dd><%= @the_event.user_id %></dd>
 
+    <dt>Intention</dt>
+    <dd><%= @the_event.intention %></dd>
 
-    <dl>
-      <dt>Event type</dt>
-      <dd><%= @the_event.event_type %></dd>
+    <dt>Created at</dt>
+    <dd><%= time_ago_in_words(@the_event.created_at) %> ago</dd>
 
-      <dt>Event date</dt>
-      <dd><%= @the_event.event_date %></dd>
+    <dt>Updated at</dt>
+    <dd><%= time_ago_in_words(@the_event.updated_at) %> ago</dd>
+  </dl>
 
-      <dt>Event location</dt>
-      <dd><%= @the_event.event_location %></dd>
+  <hr>
 
-      <dt>Contact(s)</dt>
- <dd>
-  <%= @the_event.contacts.map do |contact| 
-        link_to("#{contact.first_name} #{contact.last_name}", "/contacts/#{contact.id}")
-     end.join(", ").html_safe %>
-</dd>
-
-
-      <dt>User</dt>
-      <dd><%= @the_event.user_id %></dd>
-
-      <dt>Intention</dt>
-      <dd><%= @the_event.intention %></dd>
-
-      <dt>Created at</dt>
-      <dd><%= time_ago_in_words(@the_event.created_at) %> ago</dd>
-
-      <dt>Updated at</dt>
-      <dd><%= time_ago_in_words(@the_event.updated_at) %> ago</dd>
-    </dl>
-  </div>
-</div>
-
-<hr>
-
-<div>
   <div>
     <h2>Edit event</h2>
 
     <form action="/modify_event/<%= @the_event.id %>" method="post">
-
       <%= csrf_meta_tags %>
 
       <div>
@@ -167,27 +113,3 @@ api_response = client.chat(
     </form>
   </div>
 </div>
-
-<!--
-<h1>Send a Thank You Email</h1>
-
-<%#= form_with url: send_email_contact_path(@the_event.id), method: :post, local: true do |f| %>-->
-<!--  <div>
-    <label>To:</label>
-    <%#= select_tag :recipient_email, options_from_collection_for_select(@all_contacts, "email", "name") %>-->
-<!--  </div>
-  
-  <div>
-    <label>Subject:</label>
-    <%#= text_field_tag :subject, "Thank You for Connecting!" %>-->
-<!--  </div>
-
-  <div>
-    <label>Message:</label>
-    <%#= text_area_tag :body, "It was great to meet you. Let's stay in touch!" %>-->
-<!--  </div>
-
-  <%#= submit_tag "Send Email" %>-->
-<%# end %>
-
-<hr>
