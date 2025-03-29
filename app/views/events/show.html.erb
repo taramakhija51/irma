@@ -30,7 +30,13 @@
       <input type="textarea" id="user_content" name="user_content">
     </div>
     <button type="submit">Submit to generate a thank you email</button>
-    <%= link_to "Compose Email", "mailto:user@example.com?subject=#{CGI.escape('Your Subject Here')}&body=#{CGI.escape('Your pre-filled message goes here.')}" %>
+<% if @the_event.contacts.any? %>
+  <% recipient_email = @the_event.contacts.first.email %>
+  <% encoded_email_body = CGI.escape(@email.to_s) %>
+
+  <%= link_to "Compose Email", "mailto:#{recipient_email}?subject=#{CGI.escape('Thank You!')}&body=#{encoded_email_body}" %>
+<% end %>
+
 
   </form>
 </div>
