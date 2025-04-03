@@ -1,4 +1,4 @@
-require 'ruby-openai'
+require 'openai'
 require 'dotenv/load'
 
 # Pass the API key as :api_key

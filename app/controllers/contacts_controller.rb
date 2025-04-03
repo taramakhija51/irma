@@ -1,7 +1,7 @@
 require 'kmeans-clusterer'
 require 'faraday'
 require 'shellwords'
-
+require 'openai'
 class ContactsController < ApplicationController
   before_action :authenticate_user!
 

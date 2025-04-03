@@ -1,4 +1,4 @@
-require 'ruby-openai'
+require 'openai'
 class EventsController < ApplicationController
   def index
     matching_events = Event.all
