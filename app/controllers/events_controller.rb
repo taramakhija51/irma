@@ -32,7 +32,7 @@ class EventsController < ApplicationController
 def generate_email(event, user_content)
 
   return nil if user_content.blank?
-  client = OpenAI::Client.new(api_key: ENV.fetch("OPENAI_API_KEY"))
+  client = OpenAI::Client.new(access_token: ENV.fetch("OPENAI_API_KEY"))
   message_list = [
     {
       "role" => "system",

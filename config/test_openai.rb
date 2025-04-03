@@ -3,7 +3,7 @@ require 'dotenv/load'
 
 # Pass the API key as :api_key
 puts "OpenAI API Key: #{ENV['OPENAI_API_KEY']}"
-client = OpenAI::Client.new(api_key: ENV['OPENAI_API_KEY'])
+client = OpenAI::Client.new(access_token: ENV['OPENAI_API_KEY'])
 
 texts_to_test = [
   "Met at a conference.",
@@ -15,7 +15,7 @@ texts_to_test = [
 
 texts_to_test.each do |text|
   begin
-    response = client.embeddings(parameters: { model: 'text-embedding-ada-002', input: text })
+    response = client.embeddings(parameters: { model: "text-embedding-3-small", input: [text] })
     embedding = response.dig("data", 0, "embedding")
     puts "Text: #{text}"
     puts "Embedding: #{embedding.inspect}"
