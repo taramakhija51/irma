@@ -15,7 +15,7 @@ texts_to_test = [
 
 texts_to_test.each do |text|
   begin
-    response = client.embeddings(parameters: { model: "text-embedding-3-small", input: [text] })
+    response = client.embeddings(parameters: { model: "gpt-3.5-turbo", input: [text] })
     embedding = response.dig("data", 0, "embedding")
     puts "Text: #{text}"
     puts "Embedding: #{embedding.inspect}"

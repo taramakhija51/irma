@@ -44,40 +44,31 @@ class EventsController < ApplicationController
     render({ template: "events/show" })
   end
 
-
   def generate_email(event, user_content)
-    return "" if user_content.blank?  # Return an empty string instead of nil
-    
-    begin
-      client = OpenAI::Client.new(api_key: ENV['OPENAI_API_KEY'])
-
-      message_list = [
-        {
-          "role" => "system",
-          "content" => "Draft a thank you email after networking with someone. You met with them on #{event.event_date} via a format of #{event.event_type}, their name is  #{event.contacts.map { |contact| "#{contact.first_name} #{contact.last_name}" }.join(", ")}.The user will input some takeaways from the meeting. You want the tone to be friendly, but professional, acknowledging the user is likely not very close with the person. Emphasize WARMTH coming across. Keep it under one paragraph. Do NOT give them any fill in the blanks in the email. Try to write something generic about having learned a lot or gained a new perspective if they don't include notes. But DO NOT make it too obvious that it's generic, try to sound as thoughtful and personal as possible. Do not try to kiss up to them, and limit any words that are three syllables or longer. Avoid corporate speak -- do NOT say phrases such as 'valuable insights', 'crossing paths', etc but don't make it too informal. For an example on the level of formality -- phrases like 'I wanted to express my gratitude' are too formal and should NOT be used, opt for phrases like 'I am grateful for' instead. Meanwhile phrases like 'Looking forward to staying in touch' should NOT be used, replaced by the more formal -- 'I look forward to staying in touch' or 'I hope to stay in touch'. Try to find a happy medium between both examples in the general messaging. It should be 4-7 sentences long. Reference the date of the interaction (as inputted by the user). Don't be too repetitive, limit it to 1 exclamation mark, maximum 2 if it REALLY works.You can also send your regards or otherwise check in about their partner, their name is #{event.contacts.map { |contact| contact.partner }.join(", ")} If it is helpful, you can find additional notes on the person here: #{event.contacts.map { |contact| contact.how_met }.join(", ")} ; #{event.contacts.map { |contact| contact.notes }.join(", ")}. The user can also enter additional content on that particular interaction (which you should prioritize incorporating in your response) here: #{user_content}"
-        },
-        {
-          "role" => "user",
-          "content" => user_content
-        }
-      ]
-      
-      response = client.chat(
-        parameters: {
-          model: "gpt-3.5-turbo",
-          messages: message_list
-        }
-      )
-      
-      Rails.logger.debug "API Response: #{response}"
+    return "Thank you for taking the time to meet with me on #{event.event_date}" if user_content.blank?
   
-      result = response.dig("choices", 0, "message", "content")
-      return result.is_a?(String) ? result : ""  # Return the result if it's a string, or empty string if not
-    rescue => e
-      Rails.logger.error "OpenAI API Error: #{e.message}"
-      return "Error generating email: #{e.message}"  # Return error message if an exception occurs
-    end
+    client = OpenAI::Client.new(access_token: ENV.fetch("OPENAI_API_KEY"), request: { timeout: 60, headers: { "Custom-Header" => "value" } })
+    response = client.chat(
+      parameters: {
+        model: "gpt-3.5-turbo",
+        messages: [
+          {
+            "role" => "system",
+            "content" => "Draft a thank you email after networking with someone. You met with them on #{event.event_date} via a format of #{event.event_type}, their name is #{event.contacts.map { |contact| "#{contact.first_name} #{contact.last_name}" }.join(", ")}. The user will input some takeaways from the meeting. You want the tone to be friendly, but professional, acknowledging the user is likely not very close with the person. Emphasize WARMTH coming across. Keep it under one paragraph. Do NOT give them any fill in the blanks in the email. Try to write something generic about having learned a lot or gained a new perspective if they don't include notes. But DO NOT make it too obvious that it's generic, try to sound as thoughtful and personal as possible. Do not try to kiss up to them, and limit any words that are three syllables or longer. Avoid corporate speak -- do NOT say phrases such as 'valuable insights', 'crossing paths', etc but don't make it too informal. For an example on the level of formality -- phrases like 'I wanted to express my gratitude' are too formal and should NOT be used, opt for phrases like 'I am grateful for' instead. Meanwhile, phrases like 'Looking forward to staying in touch' should NOT be used; instead use 'I look forward to staying in touch' or 'I hope to stay in touch'. Try to find a happy medium between both examples in the general messaging. It should be 4-7 sentences long. Reference the date of the interaction (as inputted by the user). Don't be too repetitive, and limit it to 1 exclamation mark (maximum 2 if it REALLY works). You can also send your regards or otherwise check in about their partner, whose name is #{event.contacts.map { |contact| contact.partner }.join(", ")}. If it is helpful, you can find additional notes on the person here: #{event.contacts.map { |contact| contact.how_met }.join(", ")}; #{event.contacts.map { |contact| contact.notes }.join(", ")}. The user can also enter additional content on that particular interaction (which you should prioritize incorporating in your response) here: #{user_content}"
+          }
+        ]
+      }
+    )
+  
+    generated_email = response["choices"]&.first&.dig("message", "content")
+    Rails.logger.debug "Generated Email: #{generated_email}"
+    return generated_email
+  rescue => e
+    Rails.logger.error "OpenAI API Error: #{e.message}"
+    return "Error generating email: #{e.message}"
   end
+  
+
   
  def create
   @event = Event.new(
@@ -92,7 +83,6 @@ class EventsController < ApplicationController
 
 
   if @event.save
-    # Create Interaction records only after the event is saved successfully
     contact_ids.each do |contact_id|
       Interaction.create(contact_id: contact_id, event_id: @event.id)
     end
@@ -113,7 +103,7 @@ end
     the_event.event_location = params.fetch("query_event_location")
     #the_event.contact_id = params.fetch("query_contact_id")
     contact_ids = params[:query_contact_ids] || []
-    the_event.contacts = Contact.where(id: contact_ids) # Assuming a `has_many :contacts` association
+    the_event.contacts = Contact.where(id: contact_ids) 
     
 
     the_event.user_id = params.fetch("query_user_id")
