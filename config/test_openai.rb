@@ -3,7 +3,7 @@ require 'dotenv/load'
 
 # Pass the API key as :api_key
 puts "OpenAI API Key: #{ENV['OPENAI_API_KEY']}"
-client = OpenAI::Client.new(access_token: ENV['OPENAI_API_KEY'])
+client = OpenAI::Client.new(api_key: ENV['OPENAI_API_KEY'])
 
 texts_to_test = [
   "Met at a conference.",

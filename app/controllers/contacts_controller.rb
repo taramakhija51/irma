@@ -137,7 +137,7 @@ class ContactsController < ApplicationController
   def get_embeddings_for_text(text)
     return [] if text.blank? || text.size > 100000
 
-    client = OpenAI::Client.new(access_token: ENV['OPENAI_API_KEY'])
+    client = OpenAI::Client.new(api_key: ENV['OPENAI_API_KEY'])
     response = client.embeddings(parameters: { model: "text-embedding-3-small", input: [text] })
     embedding = response['data'].first['embedding']
     raise "Empty embedding" if embedding.nil? || embedding.empty?
