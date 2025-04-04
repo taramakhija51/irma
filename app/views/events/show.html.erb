@@ -11,7 +11,7 @@
       <a href="/delete_event/<%= @the_event.id %>">Delete event</a>
     </div>
   </div>
-<% if params[:email_generated] %>
+<% if params[:email_generated].present? %>
 
   <div class="generated-email">
     <h3>Generated Email:</h3>
