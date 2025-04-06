@@ -12,23 +12,43 @@ class ContactsController < ApplicationController
 
   def show
     if current_user
-      the_id = params.fetch("path_id", nil) # Fetch the path_id, handle missing param gracefully
+      the_id = params.fetch("path_id", nil)
       if the_id
         @the_contact = Contact.find_by(id: the_id, user_id: current_user.id)
-  
-        if @the_contact
-          Rails.logger.info "Contact found: #{@the_contact.inspect}"
-        else
-          redirect_to("/contacts", alert: "Contact not found or you don't have permission to view this contact.")
+        @chart_data = []
+        last_event_date = nil
+        relationship_strength = 0
+        Event.all.order(:event_date).each do |event|
+          if last_event_date
+            month_gap = ((event.event_date.year - last_event_date.year) * 12 + event.event_date.month - last_event_date.month)
+            if month_gap > 6
+              relationship_strength -= (month_gap / 6)
+            end
+          end
+          case event.intention
+          when "Request"
+            relationship_strength -= 1
+          when "Keeping in touch"
+            relationship_strength += 5
+          else
+            relationship_strength += 3
+          end
+          @chart_data << {
+        date: event.event_date.strftime("%Y-%m-%d"),
+        value: relationship_strength, 
+        id: event.id
+      }
+          last_event_date = event.event_date
+          #@chart_data << { date: event.event_date, value: relationship_strength, id: event.id }
         end
       else
-        redirect_to("/contacts", alert: "Invalid contact ID.")
+        redirect_to("/contacts", alert: "Contact not found or you don't have permission to view this contact.")
       end
-    else
-      Rails.logger.info "User not logged in"
-      redirect_to new_user_session_path
+      else
+        redirect_to new_user_session_path
     end
   end
+  
 
   def create
     the_contact = Contact.new(
