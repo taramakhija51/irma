@@ -16,36 +16,53 @@ class ContactsController < ApplicationController
       if the_id
         @the_contact = Contact.find_by(id: the_id, user_id: current_user.id)
         @chart_data = []
-        last_event_date = nil
-        relationship_strength = 0
-        Event.all.order(:event_date).each do |event|
-          if last_event_date
-            month_gap = ((event.event_date.year - last_event_date.year) * 12 + event.event_date.month - last_event_date.month)
-            if month_gap > 6
-              relationship_strength -= (month_gap / 6)
-            end
+        #last_event_date = nil
+        relationship_strength = 50
+        start_date = @the_contact.date_first_met || Event.all.order(:event_date).first.event_date
+        @chart_data << { date: start_date.strftime("%Y-%m-%d"), value: relationship_strength, id: nil }
+      last_event_date = start_date
+      @the_contact.events.order(:event_date).each do |event|
+        if last_event_date
+          month_gap = ((event.event_date.year - last_event_date.year) * 12 + event.event_date.month - last_event_date.month)
+          if month_gap > 12 
+            depreciation = 5 * (month_gap / 6)
+            relationship_strength -= depreciation
+            relationship_strength = [relationship_strength, 20].max
           end
+        end
+
+          @chart_data << {
+          date: event.event_date.strftime("%Y-%m-%d"),
+          value: relationship_strength, 
+          id: nil
+        }
           case event.intention
           when "Request"
-            relationship_strength -= 1
+            relationship_strength += 2
           when "Keeping in touch"
-            relationship_strength += 5
+            relationship_strength += 20
           else
-            relationship_strength += 3
+            relationship_strength += 15
           end
+          relationship_strength = [[relationship_strength, 0].max, 100].min
           @chart_data << {
-        date: event.event_date.strftime("%Y-%m-%d"),
-        value: relationship_strength, 
-        id: event.id
-      }
+            date: event.event_date.strftime("%Y-%m-%d"),
+            value: relationship_strength, 
+            id: event.id
+          }
+
           last_event_date = event.event_date
           #@chart_data << { date: event.event_date, value: relationship_strength, id: event.id }
+        end
+
+        if Date.today > last_event_date
+          @chart_data << { date: Date.today.strftime("%Y-%m-%d"), value: relationship_strength, id: nil }
         end
       else
         redirect_to("/contacts", alert: "Contact not found or you don't have permission to view this contact.")
       end
-      else
-        redirect_to new_user_session_path
+    else
+      redirect_to new_user_session_path
     end
   end
   
