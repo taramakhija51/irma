@@ -95,33 +95,34 @@ class ContactsController < ApplicationController
   def update
     the_id = params.fetch("path_id")
     the_contact = Contact.where(id: the_id, user_id: current_user.id).first
-
+  
     if the_contact.nil?
       redirect_to("/contacts", alert: "Contact not found or you don't have permission to edit this contact.")
       return
     end
-
+  
     if the_contact.update(
-      first_name: params[:first_name],
-      last_name: params[:last_name],
-      email: params[:email],
-      date_first_met: params[:date_first_met],
-      current_employer: params[:current_employer],
-      partner: params[:partner],
-      most_recent_contact_date: params[:most_recent_contact_date],
-      communication_frequency: params[:communication_frequency],
-      industry: params[:industry],
-      role: params[:role],
+      first_name: params.fetch("query_first_name"),
+      last_name: params.fetch("query_last_name"),
+      email: params.fetch("query_email"),
+      date_first_met: params.fetch("query_date_first_met"),
+      current_employer: params.fetch("query_current_employer"),
+      partner: params.fetch("query_partner"),
+      most_recent_contact_date: params.fetch("query_most_recent_contact_date"),
+      communication_frequency: params.fetch("query_communication_frequency"),
+      industry: params.fetch("query_industry"),
+      role: params.fetch("query_role"),
       user_id: current_user.id,
-      introduced_by_id: params[:introduced_by_id],
-      how_met: params[:how_met],
-      notes: params[:notes]
+      introduced_by_id: params.fetch("query_introduced_by_id"),
+      how_met: params.fetch("query_how_met"),
+      notes: params.fetch("query_notes")
     )
       redirect_to("/contacts/#{the_contact.id}", notice: "Contact updated successfully.")
     else
       redirect_to("/contacts/#{the_contact.id}", alert: the_contact.errors.full_messages.to_sentence)
     end
   end
+  
 
   def destroy
     the_id = params.fetch("path_id")
@@ -158,29 +159,32 @@ class ContactsController < ApplicationController
     redirect_to contact_path(@the_contact)
   end
 
-  def calculate_relationship_strength(cluster)
-    case cluster
-    when 0
-      2
-    when 1
-      4
-    when 2
-      6
-    else
-      0
+  def starting_relationship_strength(contact)
+    # Return the default value if there's no how_met note
+    return 50 unless contact.how_met.present?
+    
+    # Get the embedding for the how_met note using your get_embeddings_for_text method
+    embedding = get_embeddings_for_text(contact.how_met)
+    
+    # Suppose you have defined a training set of embeddings with known relationship strengths.
+    # For simplicity, let’s say you have cluster centers like this:
+    clusters = [
+      { center: [0.1, 0.2, 0.3, 0.4], strength: 40 },
+      { center: [0.5, 0.6, 0.7, 0.8], strength: 60 },
+      { center: [0.9, 1.0, 1.1, 1.2], strength: 70 }
+    ]
+    
+    # Use the kmeans-clusterer (or a simple distance calculation) to assign the new embedding
+    best_cluster = clusters.min_by do |cluster|
+      euclidean_distance(embedding, cluster[:center])
     end
+    
+    # Use the cluster's associated strength as the starting value
+    best_cluster ? best_cluster[:strength] : 50
   end
-
-  def get_embeddings_for_text(text)
-    return [] if text.blank? || text.size > 100000
-
-    client = OpenAI::Client.new(api_key: ENV['OPENAI_API_KEY'])
-    response = client.embeddings(parameters: { model: "gpt-3.5-turbo", input: [text] })
-    embedding = response['data'].first['embedding']
-    raise "Empty embedding" if embedding.nil? || embedding.empty?
-    embedding
-  rescue OpenAI::ClientError => e
-    Rails.logger.error("Error fetching embedding: #{e.message}")
-    []
+  
+  # A helper method for Euclidean distance (assuming both arrays are the same length)
+  def euclidean_distance(vec1, vec2)
+    Math.sqrt(vec1.zip(vec2).map { |a, b| (a - b)**2 }.sum)
   end
-end
+end  

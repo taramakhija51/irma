@@ -18,6 +18,7 @@
     const data = chartData.map((point) => point.value);
 
     const ctx = document.getElementById('relationshipChart').getContext('2d');
+    const minValue = Math.min(...chartData.map(point => point.value));
     const relationshipChart = new Chart(ctx, {
       type: 'line',
       data: {
@@ -27,19 +28,20 @@
           data: chartData.map((point) => ({
             x: point.date,
             y: point.value,
-            eventId: point.id // Attach the event ID to each data point
+            eventId: point.id 
           })),
           borderColor: 'rgba(160, 188, 205)',
           backgroundColor: 'rgba(160, 188, 205, 0.25)',
           borderWidth: 2,
           fill: true,
+          pointRadius: chartData.map(point => point.value === minValue ? 0 : 5)
         }]
       },
       options: {
         responsive: true,
         parsing: {
-          xAxisKey: 'x', // Map to the `x` property in your data points
-          yAxisKey: 'y'  // Map to the `y` property in your data points
+          xAxisKey: 'x',
+          yAxisKey: 'y' 
         },
         scales: {
           x: {
@@ -62,14 +64,12 @@
         },
         onClick: (event, elements) => {
           if (elements.length > 0) {
-            const chartElement = elements[0]; // First clicked element
-            const datasetIndex = chartElement.datasetIndex; // Dataset index
-            const dataIndex = chartElement.index; // Data index
+            const chartElement = elements[0]; 
+            const datasetIndex = chartElement.datasetIndex;
+            const dataIndex = chartElement.index; 
 
-            // Retrieve eventId from the dataset
             const eventId = relationshipChart.data.datasets[datasetIndex].data[dataIndex].eventId;
 
-            // Redirect to the corresponding event page
             if (eventId) {
               window.location.href = `/events/${eventId}`;
             } else {

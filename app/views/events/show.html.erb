@@ -1,23 +1,5 @@
 
-<div>
-  
-  <% if params[:email_generated].present? %>
-    <div class="generated-email">
-      <h3>Generated Email:</h3>
-      <div class="email-preview">
-        <% if @email.present? %>
-          <%= simple_format(@email) %>
-        <% else %>
-          <p>No email generated yet.</p>
-        <% end %>
-      </div>
-      
-      <% if @the_event.contacts.any? %>
-        <% recipient_email = @the_event.contacts.first.email %>
-        <%= link_to "Compose Email", "mailto:#{recipient_email}?subject=#{CGI.escape('Thank You!')}&body=#{CGI.escape(@email)}", class: "btn btn-primary" %>
-      <% end %>
-    </div>
-  <% end %>`
+
 
 
   <h1><%= @the_event.event_type %> details</h1>
