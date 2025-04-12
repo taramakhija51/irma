@@ -15,7 +15,8 @@ class EventsController < ApplicationController
 
   def show
     the_id = params.fetch("path_id")
-    @the_event = Event.find_by(id: params[:path_id])
+    @the_event = current_user.events.find(params[:path_id])
+
     
     if params[:user_content].present?
       # Generate new email from user content
@@ -76,7 +77,8 @@ class EventsController < ApplicationController
     event_date: params.fetch("query_event_date"),
     event_location: params.fetch("query_event_location"),
     intention: params.fetch("query_intention"),
-    user_id: params.fetch("query_user_id")
+    user_id: current_user.id
+
   )
   
   contact_ids = Array(params[:query_contact_ids])

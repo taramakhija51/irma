@@ -23,6 +23,10 @@ class User < ApplicationRecord
   class_name: "Contact",
   foreign_key: "user_id"
 )
+has_many(:events,
+  class_name: "Event",
+  foreign_key: "user_id"
+)
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
   

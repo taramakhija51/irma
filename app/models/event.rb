@@ -21,5 +21,8 @@ class Event < ApplicationRecord
   through: :interactions,
   source: :contact
   )
-
+  belongs_to(:user,
+  class_name: "User",
+  foreign_key: "user_id"
+)
 end
