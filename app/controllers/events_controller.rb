@@ -3,7 +3,7 @@ class EventsController < ApplicationController
   def index
     matching_events = current_user.events
     @list_of_events = matching_events.order({ :created_at => :desc })
-    @all_contacts = Contact.all
+    @all_contacts = current_user.contacts
     contact_ids = params[:query_contact_ids] || []
     if contact_ids.any?
       @list_of_events = @list_of_events.joins(:contacts).where(contacts: { id: contact_ids }).distinct
@@ -37,7 +37,7 @@ class EventsController < ApplicationController
     @email = session[:generated_email] if params[:email_generated]
     
     if @the_event
-      @all_contacts = Contact.all
+      @all_contacts = current_user.contacts
     else
       redirect_to(events_path, alert: "Event not found.")
     end

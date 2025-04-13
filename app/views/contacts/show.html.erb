@@ -4,79 +4,100 @@
 
 <h1>Contact Details: <%= @the_contact.first_name %></h1>
 
-<canvas id="relationshipChart" width="400" height="200"></canvas>
+<canvas id="relationshipChart"></canvas>
+
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/luxon@3"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
-
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const chartData = <%= raw @chart_data.to_json %>;
-
-    const labels = chartData.map((point) => point.date);
-    const data = chartData.map((point) => point.value);
+    const labels = chartData.map(point => point.date);
+    const values = chartData.map(point => point.value);
+    const minValue = Math.min(...values);
 
     const ctx = document.getElementById('relationshipChart').getContext('2d');
-    const minValue = Math.min(...chartData.map(point => point.value));
+
+    // Get per-point colors for the dots (this is separate from the fill)
+    const colors = values.map(value => {
+      if (value <= 30) {
+        return "orangered";
+      } else if (value >= 70) {
+        return "green";
+      } else {
+        return "goldenrod";
+      }
+    });
+
     const relationshipChart = new Chart(ctx, {
       type: 'line',
       data: {
         labels: labels,
         datasets: [{
           label: 'Relationship Strength',
-          data: chartData.map((point) => ({
-            x: point.date,
-            y: point.value,
-            eventId: point.id 
-          })),
+          data: chartData.map(point => {
+            let color;
+            if (point.value <= 30) {
+              color = "orangered";
+            } else if (point.value >= 70) {
+              color = "green";
+            } else {
+              color = "goldenrod";
+            }
+            return {
+              x: point.date,
+              y: point.value,
+              eventId: point.id,
+              pointBackgroundColor: color
+            };
+          }),
           borderColor: 'rgba(160, 188, 205)',
-          backgroundColor: 'rgba(160, 188, 205, 0.25)',
+          // The gradient will be computed using the chart's drawing area (chartArea)
+          backgroundColor: (context) => {
+            const chart = context.chart;
+            if (!chart.chartArea) {
+              return null;
+            }
+            const {top, bottom} = chart.chartArea;
+            const gradient = ctx.createLinearGradient(0, top, 0, bottom);
+            gradient.addColorStop(0.0, "rgba(0,128,0,0.2)");             // Green at top (values near 100)
+            gradient.addColorStop(0.5, "rgba(160,188,205,0.25)");          // Blue for the middle (values ~70–30)
+            gradient.addColorStop(1.0, "rgba(255,69,0,0.15)");              // Red-orange at bottom (values near 0)
+            return gradient;
+          },
+          pointRadius: chartData.map(point => point.value === minValue ? 0 : 5),
           borderWidth: 2,
-          fill: true,
-          pointRadius: chartData.map(point => point.value === minValue ? 0 : 5)
+          fill: true
         }]
       },
       options: {
         responsive: true,
-        parsing: {
-          xAxisKey: 'x',
-          yAxisKey: 'y' 
-        },
+        parsing: { xAxisKey: 'x', yAxisKey: 'y' },
         scales: {
           x: {
             type: 'time',
-            time: {
-              unit: 'month'
-            },
-            title: {
-              display: true,
-              text: 'Date'
-            }
+            time: { unit: 'month' },
+            title: { display: true, text: 'Date' }
           },
           y: {
-            title: {
-              display: true,
-              text: 'Relationship Strength'
-            },
-            beginAtZero: true
+            title: { display: true, text: 'Relationship Strength' },
+            beginAtZero: true,
+            min: 0,
+            max: 100
           }
         },
         onClick: (event, elements) => {
           if (elements.length > 0) {
-            const chartElement = elements[0]; 
-            const datasetIndex = chartElement.datasetIndex;
-            const dataIndex = chartElement.index; 
-
-            const eventId = relationshipChart.data.datasets[datasetIndex].data[dataIndex].eventId;
-
+            const { datasetIndex, index } = elements[0];
+            const eventId = relationshipChart.data.datasets[datasetIndex].data[index].eventId;
             if (eventId) {
               window.location.href = `/events/${eventId}`;
             } else {
               console.error("Event ID not found for this data point.");
             }
           }
-        }  
+        }
       }
     });
   });

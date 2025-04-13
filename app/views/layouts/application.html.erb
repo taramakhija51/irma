@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html>
+  <%= favicon_link_tag image_path("irma_logo.png"), type: "image/png", rel: "icon", sizes: "32x32" %>
+
 <head>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <%= csrf_meta_tags %>
@@ -12,9 +14,13 @@
 
   <style>
     body {
+      background-image: url(<%= asset_path('longpaperwhite.png') %>);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
       font-family: mostra-nuova, sans-serif;
       margin: 0;
-      padding: 80px 0 0 0; /* padding top for fixed nav */
+      padding: 80px 0 0 0
     }
 
     nav.navbar {
@@ -69,7 +75,7 @@
   <!-- Fixed Nav Bar -->
   <nav class="navbar">
     <a href="/">
-      <%= image_tag "irma_logo.png", alt: "irma", height: 40 %>
+      <%= image_tag "irma_logo_white.png", alt: "irma", height: 40 %>
     </a>
 
     <div class="nav-links">

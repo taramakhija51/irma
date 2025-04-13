@@ -14,18 +14,14 @@
     </div>
   </div>
 <% if params[:email_generated].present? %>
-
-  <div class="generated-email">
-    <h3>Generated Email:</h3>
-    <div class="email-preview">
-      <%= simple_format(@email) %>
+    <div class="generated-email">
+      <% if @the_event.contacts.any? %>
+        <% recipient_email = @the_event.contacts.first.email %>
+        <%= link_to "Compose Email", "mailto:#{recipient_email}?subject=#{CGI.escape('Thank You!')}&body=#{CGI.escape(@email.to_s)}", class: "btn btn-primary", data: { turbo: "false" } %>
+      <% else %>
+        <p>No contacts available for email.</p>
+      <% end %>
     </div>
-    
-    <% if @the_event.contacts.any? %>
-      <% recipient_email = @the_event.contacts.first.email %>
-      <%= link_to "Compose Email", "mailto:#{recipient_email}?subject=#{CGI.escape('Thank You!')}&body=#{CGI.escape(@email.to_s)}", class: "btn btn-primary" %>
-    <% end %>
-  </div>
 <% else %>
 
   <div>

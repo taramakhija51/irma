@@ -50,7 +50,7 @@ class ContactsController < ApplicationController
             value: relationship_strength, 
             id: event.id
           }
-
+          
           last_event_date = event.event_date
           #@chart_data << { date: event.event_date, value: relationship_strength, id: event.id }
         end
