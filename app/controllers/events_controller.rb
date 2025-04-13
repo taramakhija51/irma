@@ -1,9 +1,9 @@
 require 'openai'
 class EventsController < ApplicationController
   def index
-    matching_events = Event.all
-    @all_contacts = Contact.all
+    matching_events = current_user.events
     @list_of_events = matching_events.order({ :created_at => :desc })
+    @all_contacts = Contact.all
     contact_ids = params[:query_contact_ids] || []
     if contact_ids.any?
       @list_of_events = @list_of_events.joins(:contacts).where(contacts: { id: contact_ids }).distinct
@@ -82,10 +82,10 @@ class EventsController < ApplicationController
   )
   
   contact_ids = Array(params[:query_contact_ids])
-
-
+  valid_contact_ids = current_user.contacts.where(id: contact_ids).pluck(:id)
+  
   if @event.save
-    contact_ids.each do |contact_id|
+    valid_contact_ids.each do |contact_id|
       Interaction.create(contact_id: contact_id, event_id: @event.id)
     end
     redirect_to("/events", notice: "Event and interactions created successfully.")

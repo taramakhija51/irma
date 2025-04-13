@@ -1,68 +1,106 @@
 <!DOCTYPE html>
 <html>
-<style>
-  table {
-    width: 15%;
-    border-collapse: collapse;
-    border-spacing: 0;
-  }
-  tr:nth-child(even) {
-    background-color: rgba(193, 176, 159, 0.25);
-  }
-  body {font-family: mostra-nuova, sans-serif;}
-</style>
-  <head>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
 
-    <title>irma</title>
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= javascript_importmap_tags %>
+
+  <title>irma</title>
+
+  <style>
+    body {
+      font-family: mostra-nuova, sans-serif;
+      margin: 0;
+      padding: 80px 0 0 0; /* padding top for fixed nav */
+    }
+
+    nav.navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background-color: #003366;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 1000;
+    }
+
+    nav.navbar img {
+      height: 40px;
+    }
+
+    .nav-links a {
+      color: white;
+      margin-left: 20px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .nav-links a:hover {
+      text-decoration: underline;
+    }
+
+    table {
+      width: 15%;
+      border-collapse: collapse;
+      border-spacing: 0;
+    }
+
+    tr:nth-child(even) {
+      background-color: rgba(193, 176, 159, 0.25);
+    }
+
+    .home-logo {
+      margin-top: 40px;
+      margin-bottom: 50px;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Fixed Nav Bar -->
+  <nav class="navbar">
     <a href="/">
-      <%= image_tag "irma_logo.png", alt: "irma", width: 200, height: 200, style: "margin-bottom: 75px;"%>
+      <%= image_tag "irma_logo.png", alt: "irma", height: 40 %>
     </a>
-  </div>
-  </head>
-  <body>
-<a href="/events">Events</a>
-<a href="/contacts">Contacts</a>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
 
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <%= javascript_importmap_tags %>
-
-
-
-    <nav>
-
-    <%if current_user != nil%>
-      <%p current_user%>
-      <a href="/users/sign_out" data-method="get" rel="nofollow">Sign out</a>
-
-      <a href="/users/edit">Edit</a>
-    <%elsif current_user == nil%>
-      <%=p current_user%>
-      <a href="/users/sign_up">Sign up</a>
-      <a href="/users/sign_in">Sign in</a>
-    <%else%>
-      <%=p current_user%>
-    <%end%>  
+    <div class="nav-links">
+      <a href="/events">Events</a>
+      <a href="/contacts">Contacts</a>
+      <% if current_user %>
+        <a href="/users/sign_out" data-method="get" rel="nofollow">Sign out</a>
+        <a href="/users/edit">Edit</a>
+      <% else %>
+        <a href="/users/sign_up">Sign up</a>
+        <a href="/users/sign_in">Sign in</a>
+      <% end %>
       <a href="/">Home</a>
-    </nav>
+    </div>
+  </nav>
 
-    <hr>
+  <!-- Centered Hero Logo (only show on home page ideally) -->
+  <% if current_page?(root_path) %>
+    <div class="home-logo">
+      <%= image_tag "irma_logo.png", alt: "irma", width: 200, height: 200 %>
+    </div>
+  <% end %>
 
-    <% if notice.present? %>
-      <div style="color: green">
-        <%= notice %>
-      </div>
-    <% end %>
+  <% if notice.present? %>
+    <div style="color: green"><%= notice %></div>
+  <% end %>
 
-    <% if alert.present? %>
-      <div style="color: red">
-        <%= alert %>
-      </div>
-    <% end %>
+  <% if alert.present? %>
+    <div style="color: red"><%= alert %></div>
+  <% end %>
 
-    <%= yield %>
-  </body>
+  <%= yield %>
+</body>
 </html>
