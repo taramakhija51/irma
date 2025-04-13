@@ -165,9 +165,7 @@ class ContactsController < ApplicationController
     
     # Get the embedding for the how_met note using your get_embeddings_for_text method
     embedding = get_embeddings_for_text(contact.how_met)
-    
-    # Suppose you have defined a training set of embeddings with known relationship strengths.
-    # For simplicity, let’s say you have cluster centers like this:
+
     clusters = [
       { center: [0.1, 0.2, 0.3, 0.4], strength: 40 },
       { center: [0.5, 0.6, 0.7, 0.8], strength: 60 },
